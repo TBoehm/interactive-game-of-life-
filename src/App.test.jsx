@@ -3,11 +3,14 @@ import { render, screen, fireEvent } from '@testing-library/react'
 import App from './App'
 
 describe('App UI', () => {
-  it('renders the three geometry modes', () => {
+  it('renders all geometry modes', () => {
     render(<App />)
     expect(screen.getByRole('button', { name: 'Quadrat' })).toBeTruthy()
     expect(screen.getByRole('button', { name: 'Hexagon' })).toBeTruthy()
     expect(screen.getByRole('button', { name: 'Dreieck' })).toBeTruthy()
+    // The 3D button exists but is not clicked here: mounting it needs WebGL,
+    // which jsdom does not provide.
+    expect(screen.getByRole('button', { name: '3D' })).toBeTruthy()
   })
 
   it('shows the active rule and updates it when switching modes', () => {

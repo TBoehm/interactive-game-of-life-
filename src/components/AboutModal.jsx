@@ -79,6 +79,11 @@ export default function AboutModal({ onClose }) {
             Verwendet seine validierte Regel <b>B456/S45</b> („Life 4546", Bays 1994) — eine echte
             Game-of-Life-Regel mit Gleitern und vielen Oszillatoren.
           </li>
+          <li>
+            <b>3D</b> — ein Würfelgitter mit 26 Nachbarn (Moore-Nachbarschaft). Verwendet Bays'
+            <b> „Life 5766"</b> (B67/S567, Bays 1987) — der echte 3D-Analog zu Conway, enthält
+            dessen Regel und besitzt einen 3D-Gleiter. Ansicht per Maus drehbar.
+          </li>
         </ul>
         <p>
           In Hex- und Dreieck-Modus setzt ein Klick echte, offline gegen die jeweilige Regel

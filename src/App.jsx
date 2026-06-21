@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import GameCanvas from './components/GameCanvas'
+import Game3DCanvas from './components/Game3DCanvas'
 import AboutModal from './components/AboutModal'
 import { TOPOLOGIES, DEFAULT_RULES } from './lib/topology'
 
@@ -95,24 +96,37 @@ export default function App() {
       </header>
 
       <main className="board">
-        <GameCanvas
-          kind={kind}
-          rule={rule}
-          running={running}
-          speed={speed}
-          stepSignal={stepSignal}
-          clearSignal={clearSignal}
-          randomSignal={randomSignal}
-          onStats={setStats}
-        />
+        {kind === 'life3d' ? (
+          <Game3DCanvas
+            rule={rule}
+            running={running}
+            speed={speed}
+            stepSignal={stepSignal}
+            clearSignal={clearSignal}
+            randomSignal={randomSignal}
+            onStats={setStats}
+          />
+        ) : (
+          <GameCanvas
+            kind={kind}
+            rule={rule}
+            running={running}
+            speed={speed}
+            stepSignal={stepSignal}
+            clearSignal={clearSignal}
+            randomSignal={randomSignal}
+            onStats={setStats}
+          />
+        )}
       </main>
 
       <footer className="hint">
         Klicke auf eine freie Fläche, um ein zufälliges lebendes Gebilde in einer zufälligen Farbe
         zu erzeugen. Geborene Zellen erben die gemischte Farbe ihrer Nachbarn — bei Kollisionen
         verschmelzen die Farben. Über die Modi oben wechselst du zwischen <b>Quadrat</b> (8
-        Nachbarn, Conway), <b>Hexagon</b> (6 Nachbarn) und <b>Dreieck</b> (12 Nachbarn) — jede
-        Geometrie nutzt ihre eigene, dazu passende Regel.
+        Nachbarn, Conway), <b>Hexagon</b> (6 Nachbarn), <b>Dreieck</b> (12 Nachbarn) und <b>3D</b>{' '}
+        (26 Nachbarn, Bays Life 5766) — jede Geometrie nutzt ihre eigene, dazu passende Regel. Im
+        3D-Modus drehst du die Ansicht per Maus.
       </footer>
 
       {showAbout && <AboutModal onClose={() => setShowAbout(false)} />}

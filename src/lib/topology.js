@@ -28,6 +28,7 @@ export const TOPOLOGIES = {
   square: { label: 'Quadrat', neighbors: 8 },
   hex: { label: 'Hexagon', neighbors: 6 },
   triangle: { label: 'Dreieck', neighbors: 12 },
+  life3d: { label: '3D', neighbors: 26 },
 }
 
 // Default rules per topology.
@@ -38,6 +39,8 @@ export const DEFAULT_RULES = {
   hex: { type: 'int-hex', label: 'B2o/S2m34H' },
   // Bays Life 4546 (E4-5/F4-6): a validated triangular Game-of-Life rule.
   triangle: { type: 'totalistic', label: 'B456/S45', birth: [4, 5, 6], survival: [4, 5] },
+  // Bays Life 5766 (E5-7/F6-7): the 3D analog of Conway's Life (26 neighbors).
+  life3d: { type: 'totalistic', label: '5766 · B67/S567', birth: [6, 7], survival: [5, 6, 7] },
 }
 
 export function createTopology(kind, cols, rows, cellPx, rule) {
@@ -346,6 +349,56 @@ function finalize(t) {
     topo.survival = survival
   }
   return topo
+}
+
+// ---- 3D Life (bounded box, 26-neighbor Moore neighborhood) -----------------
+// The simulation engine is geometry-agnostic, so a 3D topology only needs the
+// neighbor lists and the totalistic rule tables. Rendering positions are
+// derived from the linear index by the 3D consumer. Unlike the hex/triangle
+// offset grids, the 3D Moore neighborhood is uniform — patterns are fully
+// translation-invariant (no parity handling needed).
+export function create3DTopology(nx, ny, nz, rule) {
+  const size = nx * ny * nz
+  const idx = (x, y, z) => (z * ny + y) * nx + x
+  const inB = (x, y, z) => x >= 0 && x < nx && y >= 0 && y < ny && z >= 0 && z < nz
+
+  const lists = new Array(size)
+  for (let z = 0; z < nz; z++) {
+    for (let y = 0; y < ny; y++) {
+      for (let x = 0; x < nx; x++) {
+        const list = []
+        for (let dz = -1; dz <= 1; dz++) {
+          for (let dy = -1; dy <= 1; dy++) {
+            for (let dx = -1; dx <= 1; dx++) {
+              if (!dx && !dy && !dz) continue
+              if (inB(x + dx, y + dy, z + dz)) list.push(idx(x + dx, y + dy, z + dz))
+            }
+          }
+        }
+        lists[idx(x, y, z)] = list
+      }
+    }
+  }
+  const { neighbors, degree } = packNeighbors(size, 26, lists)
+
+  const birth = new Uint8Array(27)
+  const survival = new Uint8Array(27)
+  for (const n of rule.birth) if (n <= 26) birth[n] = 1
+  for (const n of rule.survival) if (n <= 26) survival[n] = 1
+
+  return {
+    kind: 'life3d',
+    size,
+    maxDegree: 26,
+    neighbors,
+    degree,
+    rule,
+    birth,
+    survival,
+    nx,
+    ny,
+    nz,
+  }
 }
 
 // Nearest-centroid hit test. Exact for square/hex; good enough for triangle.

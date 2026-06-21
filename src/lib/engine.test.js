@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import { Life } from './engine'
-import { createTopology, DEFAULT_RULES } from './topology'
+import { createTopology, create3DTopology, DEFAULT_RULES } from './topology'
 
 // Helper: square topology with Conway rules.
 function squareLife(cols, rows) {
@@ -193,7 +193,7 @@ describe('triangle topology (Bays Life 4546, B456/S45)', () => {
     expect(life.generation).toBe(50)
   })
 
-  it('runs a harvested period-2 oscillator', () => {
+  it('runs a harvested period-2 oscillator (triangle)', () => {
     const topo = createTopology('triangle', 30, 30, 10, DEFAULT_RULES.triangle)
     const life = new Life(topo)
     const oc = 12
@@ -213,6 +213,41 @@ describe('triangle topology (Bays Life 4546, B456/S45)', () => {
     life.step()
     life.step()
     expect(liveSet(life)).toEqual(g0) // returns to itself after 2 generations
+    expect(life.population).toBeGreaterThan(0)
+  })
+})
+
+describe('3D Life (Bays 5766, B67/S567)', () => {
+  it('builds a 26-neighbor Moore topology', () => {
+    const topo = create3DTopology(8, 8, 8, DEFAULT_RULES.life3d)
+    expect(topo.maxDegree).toBe(26)
+    expect(topo.size).toBe(8 * 8 * 8)
+    const interior = (2 * 8 + 2) * 8 + 2 // an interior cell touches all 26
+    expect(topo.degree[interior]).toBe(26)
+    expect(topo.degree[0]).toBe(7) // a corner touches 7
+  })
+
+  it('runs a harvested period-2 oscillator', () => {
+    const N = 12
+    const topo = create3DTopology(N, N, N, DEFAULT_RULES.life3d)
+    const life = new Life(topo)
+    const id = (x, y, z) => (z * N + y) * N + x
+    const osc = [
+      [0, 0, 0],
+      [0, 0, 1],
+      [0, 1, 0],
+      [0, 1, 1],
+      [0, 2, 0],
+      [0, 2, 1],
+    ]
+    life.spawnCells(
+      osc.map(([x, y, z]) => id(4 + x, 4 + y, 4 + z)),
+      WHITE,
+    )
+    const g0 = liveSet(life)
+    life.step()
+    life.step()
+    expect(liveSet(life)).toEqual(g0)
     expect(life.population).toBeGreaterThan(0)
   })
 })

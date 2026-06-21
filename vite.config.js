@@ -8,6 +8,9 @@ import react from '@vitejs/plugin-react'
 export default defineConfig(({ mode }) => ({
   base: mode === 'production' ? '/interactive-game-of-life-/' : '/',
   plugins: [react()],
+  // three.js (used by the 3D mode) pushes the main chunk past Vite's default
+  // 500 kB warning threshold; that is expected, so raise the limit.
+  build: { chunkSizeWarningLimit: 1200 },
   test: {
     environment: 'jsdom',
     setupFiles: ['./src/test/setup.js'],

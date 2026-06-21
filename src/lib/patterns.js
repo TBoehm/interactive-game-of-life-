@@ -449,6 +449,61 @@ export function randomTriPattern() {
   return TRI_PATTERNS[Math.floor(Math.random() * TRI_PATTERNS.length)]
 }
 
+// 3D patterns for Bays' rule "Life 5766" (B67/S567) on the 26-neighbor cubic
+// grid. Harvested and verified offline; these are period-2 oscillators (planar
+// 2x3 slabs in various planes). The 3D Moore neighborhood is uniform, so unlike
+// hex/triangle there is no parity constraint — patterns spawn anywhere.
+export const LIFE3D_PATTERNS = [
+  {
+    name: 'Oszillator P2',
+    cells: [
+      [0, 0, 0],
+      [0, 0, 1],
+      [0, 1, 0],
+      [0, 1, 1],
+      [0, 2, 0],
+      [0, 2, 1],
+    ],
+  },
+  {
+    name: 'Oszillator P2',
+    cells: [
+      [0, 0, 0],
+      [0, 1, 0],
+      [0, 2, 0],
+      [1, 0, 0],
+      [1, 1, 0],
+      [1, 2, 0],
+    ],
+  },
+  {
+    name: 'Oszillator P2',
+    cells: [
+      [0, 0, 0],
+      [0, 0, 1],
+      [0, 0, 2],
+      [1, 0, 0],
+      [1, 0, 1],
+      [1, 0, 2],
+    ],
+  },
+  {
+    name: 'Oszillator P2',
+    cells: [
+      [0, 0, 0],
+      [0, 0, 1],
+      [1, 0, 0],
+      [1, 0, 1],
+      [2, 0, 0],
+      [2, 0, 1],
+    ],
+  },
+]
+
+export function randomLife3dPattern() {
+  return LIFE3D_PATTERNS[Math.floor(Math.random() * LIFE3D_PATTERNS.length)]
+}
+
 // Bounding-box dimensions of a pattern, so it can be centered on the click.
 export function patternSize(pattern) {
   let maxX = 0
