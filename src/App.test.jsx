@@ -15,7 +15,7 @@ describe('App UI', () => {
     expect(screen.getByText('B3/S23')).toBeTruthy()
 
     fireEvent.click(screen.getByRole('button', { name: 'Hexagon' }))
-    expect(screen.getByText('B2/S34')).toBeTruthy()
+    expect(screen.getByText('B2o/S2m34H')).toBeTruthy()
 
     fireEvent.click(screen.getByRole('button', { name: 'Dreieck' }))
     expect(screen.getByText('B45/S345')).toBeTruthy()

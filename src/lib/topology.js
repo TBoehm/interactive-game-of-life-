@@ -5,17 +5,20 @@
 // 8 neighbors and the B3/S23 rule. Other tessellations have a different number
 // of neighbors, so the rule (and the resulting dynamics) must change too:
 //
-//   - Square    : 8 neighbors, classic B3/S23.
-//   - Hexagonal : 6 neighbors. B3/S23 mostly dies out, so we use B2/S34H,
-//                 a known hexagonal Life-like rule that supports gliders.
-//   - Triangular: 12 neighbors (edge + vertex touching). Less charted territory;
-//                 the default rule below was tuned offline for lively, bounded
-//                 behavior.
+//   - Square    : 8 neighbors, classic totalistic B3/S23.
+//   - Hexagonal : 6 neighbors. Research (Bays 2005) shows *totalistic* hex rules
+//                 are poor — patterns collapse to dust. The genuinely Life-like
+//                 hex rule is the isotropic NON-totalistic B2o/S2m34H (Callahan
+//                 1997): birth/survival depend on the *arrangement* of neighbors
+//                 (ortho/meta/para), not just the count. It has oscillators
+//                 (flippers p2/4/8) and a 2c/4 spaceship, and is Turing-complete.
+//   - Triangular: 12 neighbors (edge + vertex touching). Totalistic rule tuned
+//                 offline for lively, bounded behavior.
 //
 // A topology exposes everything the engine and renderer need:
-//   cols, rows, size, maxDegree, neighbors[], degree[], rule {birth, survival},
-//   geometry: canvasW, canvasH, polygons (pixel-space vertices per cell),
-//   centroidX[], centroidY[] (for click hit-testing).
+//   cols, rows, size, maxDegree, neighbors[], degree[], rule, geometry, and —
+//   for non-totalistic hex — ring[] (6 cyclic neighbor slots) plus intBirth[64]
+//   / intSurvive[64] lookup tables.
 
 const SQRT3 = Math.sqrt(3)
 
@@ -25,11 +28,13 @@ export const TOPOLOGIES = {
   triangle: { label: 'Dreieck', neighbors: 12 },
 }
 
-// Default Life rules per topology. birth/survival are arrays of neighbor counts.
+// Default rules per topology.
+//   totalistic: { type:'totalistic', label, birth:[...], survival:[...] }
+//   int-hex:    { type:'int-hex', label }  (isotropic non-totalistic, B2o/S2m34H)
 export const DEFAULT_RULES = {
-  square: { birth: [3], survival: [2, 3] }, // Conway B3/S23
-  hex: { birth: [2], survival: [3, 4] }, // B2/S34H (hexagonal)
-  triangle: { birth: [4, 5], survival: [3, 4, 5] }, // tuned offline for 12-neighborhood
+  square: { type: 'totalistic', label: 'B3/S23', birth: [3], survival: [2, 3] },
+  hex: { type: 'int-hex', label: 'B2o/S2m34H' },
+  triangle: { type: 'totalistic', label: 'B45/S345', birth: [4, 5], survival: [3, 4, 5] },
 }
 
 export function createTopology(kind, cols, rows, cellPx, rule) {
@@ -53,6 +58,63 @@ function packNeighbors(size, maxDegree, neighborLists) {
     for (let k = 0; k < list.length; k++) neighbors[i * maxDegree + k] = list[k]
   }
   return { neighbors, degree }
+}
+
+// ---- Isotropic non-totalistic hex classification --------------------------
+// A cell's 6 ring neighbors form a 6-bit mask (bit s = slot s is alive, slots
+// in cyclic/angular order). For counts 2/3/4 the *arrangement* matters and is
+// classified as ortho (o), meta (m) or para (p); counts 0/1/5/6 have a single
+// form. Classification is rotation- and reflection-invariant.
+function popcount6(m) {
+  let c = 0
+  for (let s = 0; s < 6; s++) if (m & (1 << s)) c++
+  return c
+}
+
+// circular distance between two ring slots (1..3)
+function circDist(a, b) {
+  const d = Math.abs(a - b)
+  return Math.min(d, 6 - d)
+}
+
+function classifyHexMask(mask) {
+  const count = popcount6(mask)
+  const on = []
+  for (let s = 0; s < 6; s++) if (mask & (1 << s)) on.push(s)
+
+  if (count === 2) {
+    const d = circDist(on[0], on[1])
+    return { count, letter: d === 1 ? 'o' : d === 2 ? 'm' : 'p' }
+  }
+  if (count === 4) {
+    // classify by the two *dead* slots (complement of a count-2 arrangement)
+    const off = []
+    for (let s = 0; s < 6; s++) if (!(mask & (1 << s))) off.push(s)
+    const d = circDist(off[0], off[1])
+    return { count, letter: d === 1 ? 'o' : d === 2 ? 'm' : 'p' }
+  }
+  if (count === 3) {
+    // gaps between consecutive live slots (cyclic) partition 6 into 3 parts
+    const gaps = [on[1] - on[0], on[2] - on[1], 6 - on[2] + on[0]].sort((a, b) => a - b)
+    if (gaps[0] === 2) return { count, letter: 'p' } // 2,2,2 alternating
+    if (gaps[1] === 1) return { count, letter: 'o' } // 1,1,4 consecutive
+    return { count, letter: 'm' } // 1,2,3
+  }
+  return { count, letter: '' }
+}
+
+// Build the 64-entry birth/survival lookup for B2o/S2m34H.
+//   Birth:    2o
+//   Survival: 2m, 3 (all), 4 (all)
+function buildHexIntTables() {
+  const intBirth = new Uint8Array(64)
+  const intSurvive = new Uint8Array(64)
+  for (let mask = 0; mask < 64; mask++) {
+    const { count, letter } = classifyHexMask(mask)
+    intBirth[mask] = count === 2 && letter === 'o' ? 1 : 0
+    intSurvive[mask] = (count === 2 && letter === 'm') || count === 3 || count === 4 ? 1 : 0
+  }
+  return { intBirth, intSurvive }
 }
 
 // ---- Square (toroidal, 8 neighbors) ---------------------------------------
@@ -89,21 +151,21 @@ function buildSquare(cols, rows, s, rule) {
     }
   }
 
-  return finalize(
-    'square',
+  return finalize({
+    kind: 'square',
     cols,
     rows,
     size,
-    8,
+    maxDegree: 8,
     neighbors,
     degree,
     rule,
-    cols * s,
-    rows * s,
+    canvasW: cols * s,
+    canvasH: rows * s,
     polygons,
     centroidX,
     centroidY,
-  )
+  })
 }
 
 // ---- Hexagonal (bounded, 6 neighbors, pointy-top odd-r offset) -------------
@@ -112,7 +174,8 @@ function buildHex(cols, rows, r, rule) {
   const inB = (c, rr) => c >= 0 && c < cols && rr >= 0 && rr < rows
   const idx = (c, rr) => rr * cols + c
 
-  // redblobgames "odd-r" offset neighbor directions.
+  // redblobgames "odd-r" offset neighbor directions, in cyclic angular order
+  // (E, NE, NW, W, SW, SE) so the slot index can drive non-totalistic rules.
   const dirsEven = [
     [1, 0],
     [0, -1],
@@ -131,16 +194,22 @@ function buildHex(cols, rows, r, rule) {
   ]
 
   const lists = new Array(size)
+  const ring = new Int32Array(size * 6).fill(-1)
   for (let rr = 0; rr < rows; rr++) {
     const dirs = rr & 1 ? dirsOdd : dirsEven
     for (let c = 0; c < cols; c++) {
+      const cell = idx(c, rr)
       const list = []
-      for (const [dc, dr] of dirs) {
-        const nc = c + dc
-        const nr = rr + dr
-        if (inB(nc, nr)) list.push(idx(nc, nr))
+      for (let s = 0; s < 6; s++) {
+        const nc = c + dirs[s][0]
+        const nr = rr + dirs[s][1]
+        if (inB(nc, nr)) {
+          const ni = idx(nc, nr)
+          list.push(ni)
+          ring[cell * 6 + s] = ni
+        }
       }
-      lists[idx(c, rr)] = list
+      lists[cell] = list
     }
   }
   const { neighbors, degree } = packNeighbors(size, 6, lists)
@@ -164,21 +233,30 @@ function buildHex(cols, rows, r, rule) {
     }
   }
 
-  return finalize(
-    'hex',
+  const extra = { ring }
+  if (rule.type === 'int-hex') {
+    const { intBirth, intSurvive } = buildHexIntTables()
+    extra.nonTotalistic = true
+    extra.intBirth = intBirth
+    extra.intSurvive = intSurvive
+  }
+
+  return finalize({
+    kind: 'hex',
     cols,
     rows,
     size,
-    6,
+    maxDegree: 6,
     neighbors,
     degree,
     rule,
-    hexW * (cols + 0.5),
-    1.5 * r * rows + 0.5 * r,
+    canvasW: hexW * (cols + 0.5),
+    canvasH: 1.5 * r * rows + 0.5 * r,
     polygons,
     centroidX,
     centroidY,
-  )
+    extra,
+  })
 }
 
 // ---- Triangular (bounded, 12 neighbors: edge + vertex touching) ------------
@@ -235,60 +313,36 @@ function buildTriangle(cols, rows, L, rule) {
     }
   }
 
-  return finalize(
-    'triangle',
+  return finalize({
+    kind: 'triangle',
     cols,
     rows,
     size,
-    12,
+    maxDegree: 12,
     neighbors,
     degree,
     rule,
-    cols * half + half,
-    rows * h,
+    canvasW: cols * half + half,
+    canvasH: rows * h,
     polygons,
     centroidX,
     centroidY,
-  )
+  })
 }
 
-function finalize(
-  kind,
-  cols,
-  rows,
-  size,
-  maxDegree,
-  neighbors,
-  degree,
-  rule,
-  canvasW,
-  canvasH,
-  polygons,
-  centroidX,
-  centroidY,
-) {
-  // Boolean lookup tables indexed by live-neighbor count.
-  const birth = new Uint8Array(maxDegree + 1)
-  const survival = new Uint8Array(maxDegree + 1)
-  for (const n of rule.birth) if (n <= maxDegree) birth[n] = 1
-  for (const n of rule.survival) if (n <= maxDegree) survival[n] = 1
-  return {
-    kind,
-    cols,
-    rows,
-    size,
-    maxDegree,
-    neighbors,
-    degree,
-    rule,
-    birth,
-    survival,
-    canvasW,
-    canvasH,
-    polygons,
-    centroidX,
-    centroidY,
+function finalize(t) {
+  const topo = { ...t, ...(t.extra || {}) }
+  delete topo.extra
+  // Totalistic lookup tables indexed by live-neighbor count.
+  if (t.rule.birth && t.rule.survival) {
+    const birth = new Uint8Array(t.maxDegree + 1)
+    const survival = new Uint8Array(t.maxDegree + 1)
+    for (const n of t.rule.birth) if (n <= t.maxDegree) birth[n] = 1
+    for (const n of t.rule.survival) if (n <= t.maxDegree) survival[n] = 1
+    topo.birth = birth
+    topo.survival = survival
   }
+  return topo
 }
 
 // Nearest-centroid hit test. Exact for square/hex; good enough for triangle.

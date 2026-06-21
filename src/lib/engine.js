@@ -67,6 +67,10 @@ export class Life {
   }
 
   step() {
+    if (this.topo.nonTotalistic) {
+      this._stepNonTotalistic()
+      return
+    }
     const { alive, r, g, b, size } = this
     const { neighbors, degree, maxDegree, birth, survival } = this.topo
     const nAlive = this._alive
@@ -103,6 +107,70 @@ export class Life {
           nAlive[i] = 0
         }
       } else if (birth[count]) {
+        nAlive[i] = 1
+        nr[i] = (sr / count) | 0
+        ng[i] = (sg / count) | 0
+        nb[i] = (sb / count) | 0
+        population++
+      } else {
+        nAlive[i] = 0
+      }
+    }
+
+    this.alive = nAlive
+    this.r = nr
+    this.g = ng
+    this.b = nb
+    this._alive = alive
+    this._r = r
+    this._g = g
+    this._b = b
+    this.generation++
+    this.population = population
+  }
+
+  // Isotropic non-totalistic step (hex B2o/S2m34H). Uses the 6 cyclic ring
+  // slots: birth/survival are decided by a 64-entry lookup over the live-neighbor
+  // arrangement (the bit pattern), not just the count. Born cells average the
+  // color of their live ring neighbors.
+  _stepNonTotalistic() {
+    const { alive, r, g, b, size } = this
+    const { ring, intBirth, intSurvive } = this.topo
+    const nAlive = this._alive
+    const nr = this._r
+    const ng = this._g
+    const nb = this._b
+    let population = 0
+
+    for (let i = 0; i < size; i++) {
+      const base = i * 6
+      let mask = 0
+      let count = 0
+      let sr = 0
+      let sg = 0
+      let sb = 0
+      for (let s = 0; s < 6; s++) {
+        const j = ring[base + s]
+        if (j >= 0 && alive[j]) {
+          mask |= 1 << s
+          count++
+          sr += r[j]
+          sg += g[j]
+          sb += b[j]
+        }
+      }
+
+      if (alive[i]) {
+        if (intSurvive[mask]) {
+          nAlive[i] = 1
+          nr[i] = r[i]
+          ng[i] = g[i]
+          nb[i] = b[i]
+          population++
+        } else {
+          nAlive[i] = 0
+        }
+      } else if (intBirth[mask]) {
         nAlive[i] = 1
         nr[i] = (sr / count) | 0
         ng[i] = (sg / count) | 0

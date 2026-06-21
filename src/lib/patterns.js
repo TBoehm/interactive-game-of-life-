@@ -234,6 +234,113 @@ export function randomPattern() {
   return pool[Math.floor(Math.random() * pool.length)]
 }
 
+// Hexagonal patterns for the non-totalistic rule B2o/S2m34H. Square patterns are
+// meaningless here, so these were harvested and verified offline against the
+// actual rule (flippers period 2, the documented 2c/4 spaceship, period-4
+// oscillators). Coordinates are (col, row) offsets in odd-r offset coordinates
+// and assume an EVEN-row origin (neighbor slots differ by row parity), so the
+// spawner snaps the origin row to even.
+export const HEX_PATTERNS = [
+  {
+    name: 'Flipper',
+    category: 'Oszillator',
+    cells: [
+      [0, 0],
+      [1, 0],
+      [1, 1],
+    ],
+  },
+  {
+    name: 'Flipper',
+    category: 'Oszillator',
+    cells: [
+      [0, 1],
+      [0, 2],
+      [0, 3],
+    ],
+  },
+  {
+    name: 'Flipper',
+    category: 'Oszillator',
+    cells: [
+      [0, 1],
+      [1, 0],
+      [1, 2],
+    ],
+  },
+  {
+    name: 'Flipper',
+    category: 'Oszillator',
+    cells: [
+      [0, 1],
+      [1, 1],
+      [2, 2],
+    ],
+  },
+  {
+    name: 'P4-Oszillator',
+    category: 'Oszillator',
+    cells: [
+      [0, 0],
+      [0, 1],
+      [1, 2],
+      [2, 2],
+      [3, 2],
+    ],
+  },
+  {
+    name: 'P4-Oszillator',
+    category: 'Oszillator',
+    cells: [
+      [0, 1],
+      [0, 2],
+      [0, 3],
+      [1, 0],
+      [1, 4],
+    ],
+  },
+  {
+    name: 'Raumschiff (2c/4)',
+    category: 'Raumschiff',
+    cells: [
+      [0, 1],
+      [1, 0],
+      [2, 0],
+      [3, 0],
+      [3, 3],
+      [4, 0],
+    ],
+  },
+  {
+    name: 'Raumschiff (2c/4)',
+    category: 'Raumschiff',
+    cells: [
+      [0, 1],
+      [0, 4],
+      [1, 4],
+      [2, 4],
+      [3, 3],
+      [3, 4],
+    ],
+  },
+  {
+    name: 'Raumschiff (2c/4)',
+    category: 'Raumschiff',
+    cells: [
+      [0, 1],
+      [1, 1],
+      [1, 4],
+      [2, 1],
+      [3, 1],
+      [4, 2],
+    ],
+  },
+]
+
+export function randomHexPattern() {
+  return HEX_PATTERNS[Math.floor(Math.random() * HEX_PATTERNS.length)]
+}
+
 // Bounding-box dimensions of a pattern, so it can be centered on the click.
 export function patternSize(pattern) {
   let maxX = 0

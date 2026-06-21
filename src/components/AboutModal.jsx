@@ -68,8 +68,11 @@ export default function AboutModal({ onClose }) {
             <b>Quadrat</b> — 8 Nachbarn, klassische Conway-Regel B3/S23.
           </li>
           <li>
-            <b>Hexagon</b> — nur 6 Nachbarn. Conways Regel stirbt hier aus, daher B2/S34 (eine
-            bekannte hexagonale Life-Regel, die Gleiter hervorbringt).
+            <b>Hexagon</b> — nur 6 Nachbarn. Rein zählende (totalistische) Hex-Regeln zerfallen zu
+            Staub (Bays 2005). Daher die <i>nicht-totalistische</i> Regel <b>B2o/S2m34H</b>
+            (Callahan 1997): Es zählt nicht nur die Anzahl, sondern die <i>Anordnung</i> der
+            Nachbarn (ortho/meta/para). Sie hat echte Oszillatoren (Flipper P2/4/8), ein 2c/4-
+            Raumschiff und ist Turing-vollständig.
           </li>
           <li>
             <b>Dreieck</b> — 12 Nachbarn (Kanten + Ecken). Wenig erforschtes Terrain; die Regel
@@ -77,9 +80,9 @@ export default function AboutModal({ onClose }) {
           </li>
         </ul>
         <p>
-          In den Hex- und Dreieck-Modi erzeugt ein Klick eine kleine Zufalls-Wolke statt eines
-          benannten Musters — die klassischen Figuren (Glider, Pulsar …) sind nur auf dem
-          Quadratgitter definiert.
+          Im Hex-Modus setzt ein Klick echte, offline verifizierte Kreaturen (Flipper, Raumschiffe);
+          im Dreieck-Modus eine kleine Zufalls-Wolke. Die klassischen Quadrat-Figuren (Glider,
+          Pulsar …) sind nur auf dem Quadratgitter definiert.
         </p>
 
         <p className="modal-foot">

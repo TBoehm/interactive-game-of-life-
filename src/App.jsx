@@ -3,9 +3,7 @@ import GameCanvas from './components/GameCanvas'
 import AboutModal from './components/AboutModal'
 import { TOPOLOGIES, DEFAULT_RULES } from './lib/topology'
 
-function ruleLabel(rule) {
-  return `B${rule.birth.join('')}/S${rule.survival.join('')}`
-}
+const ruleLabel = (rule) => rule.label
 
 export default function App() {
   const [kind, setKind] = useState('square')

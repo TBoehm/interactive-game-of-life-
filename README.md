@@ -64,6 +64,29 @@ Das Gitter ist **toroidal** (Ränder verbunden), damit Raumschiffe endlos fliege
 | Methuselah | winziger Start, lange chaotische Entwicklung | R-Pentomino, Acorn, Diehard                   |
 | Gun        | unbegrenztes Wachstum                        | Gosper Glider Gun (seltener)                  |
 
+### Geometrie-Modi (Quadrat / Hexagon / Dreieck)
+
+Conways Regel hängt am Quadratgitter; andere Kachelungen haben eine andere
+Nachbarzahl und brauchen daher eine andere Regel.
+
+| Modus   | Nachbarn | Regel        | Hintergrund                                                                    |
+| ------- | -------- | ------------ | ------------------------------------------------------------------------------ |
+| Quadrat | 8        | `B3/S23`     | Conways klassische Regel.                                                      |
+| Hexagon | 6        | `B2o/S2m34H` | **Nicht-totalistisch** (Callahan 1997): es zählt die _Anordnung_ der Nachbarn. |
+| Dreieck | 12       | `B45/S345`   | Totalistisch, offline auf lebendiges, begrenztes Verhalten getunt.             |
+
+Warum nicht totalistisch beim Hexagon? Bays (2005) zeigte, dass _zählende_
+6-Nachbar-Hexregeln keine echte „Game of Life"-Regel ergeben — Muster zerfallen
+zu Staub. Die isotrope nicht-totalistische Regel **B2o/S2m34H** unterscheidet
+dagegen die Anordnung der Nachbarn (ortho/meta/para) und hat echte Oszillatoren
+(Flipper P2/4/8), ein 2c/4-Raumschiff und ist sogar Turing-vollständig. Die
+Hex-Kreaturen wurden offline gegen diese Regel verifiziert (`src/lib/*.test.js`).
+
+Quellen: [Bays, _Game of Life in Hexagonal and Pentagonal Tessellations_, Complex
+Systems 15 (2005)](https://wpmedia.wolfram.com/sites/13/2018/02/15-3-4.pdf) ·
+[LifeWiki: B2o/S2m34H](https://conwaylife.com/wiki/OCA:B2o/S2m34H) ·
+[LifeWiki: Hexagonal neighbourhood](https://conwaylife.com/wiki/Hexagonal_neighbourhood)
+
 ## Bedienung
 
 - **Klick** ins Feld → zufälliges Gebilde in zufälliger Farbe.

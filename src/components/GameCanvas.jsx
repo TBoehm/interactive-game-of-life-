@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react'
 import { Life } from '../lib/engine'
 import { randomColor } from '../lib/color'
-import { randomPattern, patternSize } from '../lib/patterns'
+import { randomPattern, randomHexPattern, patternSize } from '../lib/patterns'
 import { createTopology, cellAt } from '../lib/topology'
 
 // Pixel size per cell, chosen per topology (hex/triangle look better larger).
@@ -37,7 +37,7 @@ export default function GameCanvas({
     speedRef.current = speed
   }, [speed])
 
-  const ruleKey = `${kind}:${rule.birth.join(',')}/${rule.survival.join(',')}`
+  const ruleKey = `${kind}:${rule.label}`
 
   // ---- Spawning -------------------------------------------------------------
   function spawnAtCell(cellIndex) {
@@ -56,8 +56,31 @@ export default function GameCanvas({
       return pattern.name
     }
 
-    // Hex/triangle: square patterns are meaningless, so seed a small random
-    // cluster (a "soup blob") around the clicked cell and let the rule evolve.
+    if (topo.kind === 'hex') {
+      // Real B2o/S2m34H creatures (flippers, 2c/4 spaceships, P4 oscillators),
+      // harvested offline. Coordinates assume an even-row origin, so snap the
+      // origin row to even to preserve the parity-sensitive neighbor layout.
+      const pattern = randomHexPattern()
+      const { width, height } = patternSize(pattern)
+      const cx = cellIndex % topo.cols
+      const cy = (cellIndex / topo.cols) | 0
+      const ox = cx - (width >> 1)
+      let oy = cy - (height >> 1)
+      if (oy & 1) oy -= 1
+      const indices = []
+      for (const [dx, dy] of pattern.cells) {
+        const col = ox + dx
+        const row = oy + dy
+        if (col >= 0 && col < topo.cols && row >= 0 && row < topo.rows) {
+          indices.push(row * topo.cols + col)
+        }
+      }
+      life.spawnCells(indices, color)
+      return pattern.name
+    }
+
+    // Triangle: named patterns don't translate, so seed a small random cluster
+    // (a "soup blob") around the clicked cell and let the rule evolve.
     const indices = new Set([cellIndex])
     const { neighbors, degree, maxDegree } = topo
     const base = cellIndex * maxDegree

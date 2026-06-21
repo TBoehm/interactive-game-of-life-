@@ -118,23 +118,69 @@ describe('color inheritance with blending', () => {
   })
 })
 
-describe('non-square topologies run with their own rules', () => {
-  it('hex births a cell with exactly 2 live neighbors (B2)', () => {
-    // B2/S34: a dead hex with 2 live neighbors must be born.
-    const topo = createTopology('hex', 8, 8, 10, DEFAULT_RULES.hex)
+describe('non-totalistic hex rule B2o/S2m34H', () => {
+  it('classifies birth/survival by neighbor arrangement, not just count', () => {
+    const topo = createTopology('hex', 12, 12, 10, DEFAULT_RULES.hex)
+    expect(topo.nonTotalistic).toBe(true)
+    // 2 ortho (adjacent ring slots 0,1) -> birth
+    expect(topo.intBirth[0b000011]).toBe(1)
+    // 2 meta (slots 0,2) -> survive only, no birth
+    expect(topo.intBirth[0b000101]).toBe(0)
+    expect(topo.intSurvive[0b000101]).toBe(1)
+    // 2 para (slots 0,3, opposite) -> neither
+    expect(topo.intBirth[0b001001]).toBe(0)
+    expect(topo.intSurvive[0b001001]).toBe(0)
+    // 3 and 4 always survive
+    expect(topo.intSurvive[0b000111]).toBe(1)
+    expect(topo.intSurvive[0b001111]).toBe(1)
+    // 1, 5, 6 die
+    expect(topo.intSurvive[0b000001]).toBe(0)
+    expect(topo.intSurvive[0b011111]).toBe(0)
+  })
+
+  it('births a dead cell whose two live neighbors are adjacent (2o)', () => {
+    const topo = createTopology('hex', 12, 12, 10, DEFAULT_RULES.hex)
     const life = new Life(topo)
-    // pick a cell, light two of its neighbors -> the cell should be born,
-    // and crucially each lit neighbor has only 1 neighbor so it dies (S needs 3+).
-    const cell = 3 * 8 + 3
-    const base = cell * topo.maxDegree
-    const n0 = topo.neighbors[base]
-    const n1 = topo.neighbors[base + 1]
-    life.spawnCells([n0, n1], WHITE)
+    const cell = 5 * 12 + 5
+    life.spawnCells([topo.ring[cell * 6 + 0], topo.ring[cell * 6 + 1]], WHITE)
     expect(life.alive[cell]).toBe(0)
     life.step()
     expect(life.alive[cell]).toBe(1)
   })
 
+  it('does not birth when the two live neighbors are opposite (2p)', () => {
+    const topo = createTopology('hex', 12, 12, 10, DEFAULT_RULES.hex)
+    const life = new Life(topo)
+    const cell = 5 * 12 + 5
+    life.spawnCells([topo.ring[cell * 6 + 0], topo.ring[cell * 6 + 3]], WHITE)
+    life.step()
+    expect(life.alive[cell]).toBe(0)
+  })
+
+  it('runs a harvested flipper as a period-2 oscillator', () => {
+    const topo = createTopology('hex', 20, 20, 10, DEFAULT_RULES.hex)
+    const life = new Life(topo)
+    const oc = 8
+    const orr = 8 // even-row origin
+    const flipper = [
+      [0, 0],
+      [1, 0],
+      [1, 1],
+    ]
+    life.spawnCells(
+      flipper.map(([c, r]) => (orr + r) * 20 + (oc + c)),
+      WHITE,
+    )
+    const snap = () => liveSet(life)
+    const g0 = snap()
+    life.step()
+    life.step()
+    expect(snap()).toEqual(g0) // returns to itself after 2 generations
+    expect(life.population).toBeGreaterThan(0)
+  })
+})
+
+describe('triangle topology', () => {
   it('triangle engine advances without error and stays bounded', () => {
     const topo = createTopology('triangle', 30, 30, 10, DEFAULT_RULES.triangle)
     const life = new Life(topo)
