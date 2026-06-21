@@ -58,10 +58,37 @@ export default function AboutModal({ onClose }) {
           </li>
         </ul>
 
+        <h3>Geometrie-Modi</h3>
+        <p>
+          Conways Regel hängt am <b>Quadratgitter</b> mit seinen 8 Nachbarn. Auf
+          anderen Kachelungen ändert sich die Nachbarzahl — und damit muss auch
+          die Regel angepasst werden:
+        </p>
+        <ul>
+          <li>
+            <b>Quadrat</b> — 8 Nachbarn, klassische Conway-Regel B3/S23.
+          </li>
+          <li>
+            <b>Hexagon</b> — nur 6 Nachbarn. Conways Regel stirbt hier aus,
+            daher B2/S34 (eine bekannte hexagonale Life-Regel, die Gleiter
+            hervorbringt).
+          </li>
+          <li>
+            <b>Dreieck</b> — 12 Nachbarn (Kanten + Ecken). Wenig erforschtes
+            Terrain; die Regel B45/S345 wurde auf lebendiges, begrenztes
+            Verhalten abgestimmt.
+          </li>
+        </ul>
+        <p>
+          In den Hex- und Dreieck-Modi erzeugt ein Klick eine kleine
+          Zufalls-Wolke statt eines benannten Musters — die klassischen Figuren
+          (Glider, Pulsar …) sind nur auf dem Quadratgitter definiert.
+        </p>
+
         <p className="modal-foot">
           Kurz gesagt: ein digitaler Sandkasten — eine meditative, generative
-          Spielwiese, in der aus drei Regeln und deinen Klicks ein farbiges, sich
-          selbst entwickelndes Leben entsteht.
+          Spielwiese, in der aus einfachen Regeln und ein paar Klicks ein
+          farbiges, sich selbst entwickelndes Leben entsteht.
         </p>
       </div>
     </div>

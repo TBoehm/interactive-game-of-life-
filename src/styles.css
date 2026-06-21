@@ -59,6 +59,37 @@ body {
   box-shadow: 0 0 12px var(--accent);
 }
 
+.modes {
+  display: flex;
+  gap: 4px;
+  padding: 4px;
+  background: var(--bg);
+  border: 1px solid #232a3d;
+  border-radius: 11px;
+}
+
+.mode {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+.mode:hover {
+  color: var(--text);
+}
+
+.mode.active {
+  background: linear-gradient(180deg, #28406a, #1d2c49);
+  color: var(--text);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.06) inset;
+}
+
 .controls {
   display: flex;
   flex-wrap: wrap;
@@ -126,6 +157,10 @@ body {
 .stats b {
   color: var(--text);
   font-variant-numeric: tabular-nums;
+}
+
+.stats .rule b {
+  color: var(--accent-2);
 }
 
 .stats .last b {

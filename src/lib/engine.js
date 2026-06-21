@@ -1,29 +1,32 @@
-// Game of Life simulation engine with per-cell color and color inheritance.
+// Topology-agnostic Game of Life engine with per-cell color inheritance.
 //
-// Colors replicate by inheritance: when a dead cell is born (exactly 3 live
-// neighbours), the newborn cell takes the *average* color of those 3 parents.
-// Surviving cells keep their own color. As a result each spawned structure
-// carries its own hue, and when two structures collide their colors blend
-// organically. The grid is toroidal (edges wrap), so spaceships fly forever.
+// It runs on any tessellation described by a `topology` object (see topology.js):
+// the step function reads each cell's precomputed neighbor indices and applies
+// that topology's birth/survival rule. Works identically for square (8 nb),
+// hexagonal (6 nb) and triangular (12 nb) grids.
+//
+// Color replication: a cell born this generation takes the *average* color of
+// its live neighbors (the cells that triggered its birth); survivors keep their
+// own color. On the square grid (birth = exactly 3) this averages 3 parents;
+// on other grids it averages however many neighbors the rule required.
 
 export class Life {
-  constructor(width, height) {
-    this.resize(width, height)
+  constructor(topology) {
+    this.setTopology(topology)
   }
 
-  resize(width, height) {
-    this.width = width
-    this.height = height
-    this.size = width * height
-    this.alive = new Uint8Array(this.size)
-    this.r = new Uint8Array(this.size)
-    this.g = new Uint8Array(this.size)
-    this.b = new Uint8Array(this.size)
-    // Scratch buffers for the next generation (double buffering).
-    this._alive = new Uint8Array(this.size)
-    this._r = new Uint8Array(this.size)
-    this._g = new Uint8Array(this.size)
-    this._b = new Uint8Array(this.size)
+  setTopology(topology) {
+    this.topo = topology
+    const size = topology.size
+    this.size = size
+    this.alive = new Uint8Array(size)
+    this.r = new Uint8Array(size)
+    this.g = new Uint8Array(size)
+    this.b = new Uint8Array(size)
+    this._alive = new Uint8Array(size)
+    this._r = new Uint8Array(size)
+    this._g = new Uint8Array(size)
+    this._b = new Uint8Array(size)
     this.generation = 0
     this.population = 0
   }
@@ -37,14 +40,11 @@ export class Life {
     this.population = 0
   }
 
-  // Place a pattern's live cells with the given color. Coordinates wrap around
-  // the toroidal grid. Existing live cells in the footprint are overwritten.
-  spawn(cells, originX, originY, color) {
-    const { width, height } = this
-    for (const [dx, dy] of cells) {
-      const x = ((originX + dx) % width + width) % width
-      const y = ((originY + dy) % height + height) % height
-      const i = y * width + x
+  // Set explicit cell indices alive with a color (used for hex/triangle and any
+  // index-based spawning).
+  spawnCells(indices, color) {
+    for (const i of indices) {
+      if (i < 0 || i >= this.size) continue
       this.alive[i] = 1
       this.r[i] = color.r
       this.g[i] = color.g
@@ -53,74 +53,66 @@ export class Life {
     this.population = this._countPopulation()
   }
 
-  // Advance one generation.
+  // Spawn a square-grid pattern (list of [dx, dy]) at an origin, wrapping on the
+  // toroidal square grid. Only meaningful for the square topology.
+  spawnPattern(cells, originX, originY, color) {
+    const { cols, rows } = this.topo
+    const indices = []
+    for (const [dx, dy] of cells) {
+      const x = ((originX + dx) % cols + cols) % cols
+      const y = ((originY + dy) % rows + rows) % rows
+      indices.push(y * cols + x)
+    }
+    this.spawnCells(indices, color)
+  }
+
   step() {
-    const { width, height, alive, r, g, b } = this
+    const { alive, r, g, b, size } = this
+    const { neighbors, degree, maxDegree, birth, survival } = this.topo
     const nAlive = this._alive
     const nr = this._r
     const ng = this._g
     const nb = this._b
     let population = 0
 
-    for (let y = 0; y < height; y++) {
-      const yUp = (y - 1 + height) % height
-      const yDn = (y + 1) % height
-      for (let x = 0; x < width; x++) {
-        const xLt = (x - 1 + width) % width
-        const xRt = (x + 1) % width
+    for (let i = 0; i < size; i++) {
+      const base = i * maxDegree
+      const deg = degree[i]
+      let count = 0
+      let sr = 0
+      let sg = 0
+      let sb = 0
+      for (let k = 0; k < deg; k++) {
+        const j = neighbors[base + k]
+        if (alive[j]) {
+          count++
+          sr += r[j]
+          sg += g[j]
+          sb += b[j]
+        }
+      }
 
-        // Indices of the 8 neighbours (toroidal).
-        const n0 = yUp * width + xLt
-        const n1 = yUp * width + x
-        const n2 = yUp * width + xRt
-        const n3 = y * width + xLt
-        const n4 = y * width + xRt
-        const n5 = yDn * width + xLt
-        const n6 = yDn * width + x
-        const n7 = yDn * width + xRt
-
-        const count =
-          alive[n0] + alive[n1] + alive[n2] + alive[n3] +
-          alive[n4] + alive[n5] + alive[n6] + alive[n7]
-
-        const i = y * width + x
-
-        if (alive[i]) {
-          // Survival: 2 or 3 neighbours. Keep own color.
-          if (count === 2 || count === 3) {
-            nAlive[i] = 1
-            nr[i] = r[i]
-            ng[i] = g[i]
-            nb[i] = b[i]
-            population++
-          } else {
-            nAlive[i] = 0
-          }
-        } else if (count === 3) {
-          // Birth: average the color of the 3 live parents.
-          let sr = 0
-          let sg = 0
-          let sb = 0
-          if (alive[n0]) { sr += r[n0]; sg += g[n0]; sb += b[n0] }
-          if (alive[n1]) { sr += r[n1]; sg += g[n1]; sb += b[n1] }
-          if (alive[n2]) { sr += r[n2]; sg += g[n2]; sb += b[n2] }
-          if (alive[n3]) { sr += r[n3]; sg += g[n3]; sb += b[n3] }
-          if (alive[n4]) { sr += r[n4]; sg += g[n4]; sb += b[n4] }
-          if (alive[n5]) { sr += r[n5]; sg += g[n5]; sb += b[n5] }
-          if (alive[n6]) { sr += r[n6]; sg += g[n6]; sb += b[n6] }
-          if (alive[n7]) { sr += r[n7]; sg += g[n7]; sb += b[n7] }
+      if (alive[i]) {
+        if (survival[count]) {
           nAlive[i] = 1
-          nr[i] = (sr / 3) | 0
-          ng[i] = (sg / 3) | 0
-          nb[i] = (sb / 3) | 0
+          nr[i] = r[i]
+          ng[i] = g[i]
+          nb[i] = b[i]
           population++
         } else {
           nAlive[i] = 0
         }
+      } else if (birth[count]) {
+        nAlive[i] = 1
+        nr[i] = (sr / count) | 0
+        ng[i] = (sg / count) | 0
+        nb[i] = (sb / count) | 0
+        population++
+      } else {
+        nAlive[i] = 0
       }
     }
 
-    // Swap buffers.
     this.alive = nAlive
     this.r = nr
     this.g = ng
@@ -131,11 +123,6 @@ export class Life {
     this._b = b
     this.generation++
     this.population = population
-  }
-
-  // Sprinkle several random patterns across the board.
-  seedRandom(spawnFn, count) {
-    for (let n = 0; n < count; n++) spawnFn()
   }
 
   _countPopulation() {

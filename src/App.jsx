@@ -1,8 +1,14 @@
 import { useState } from 'react'
 import GameCanvas from './components/GameCanvas'
 import AboutModal from './components/AboutModal'
+import { TOPOLOGIES, DEFAULT_RULES } from './lib/topology'
+
+function ruleLabel(rule) {
+  return `B${rule.birth.join('')}/S${rule.survival.join('')}`
+}
 
 export default function App() {
+  const [kind, setKind] = useState('square')
   const [running, setRunning] = useState(true)
   const [speed, setSpeed] = useState(12) // generations per second
   const [stepSignal, setStepSignal] = useState(0)
@@ -11,12 +17,27 @@ export default function App() {
   const [stats, setStats] = useState({ generation: 0, population: 0, lastPattern: null })
   const [showAbout, setShowAbout] = useState(false)
 
+  const rule = DEFAULT_RULES[kind]
+
   return (
     <div className="app">
       <header className="toolbar">
         <h1>
           <span className="dot" /> Interaktives Game of Life
         </h1>
+
+        <div className="modes">
+          {Object.entries(TOPOLOGIES).map(([key, t]) => (
+            <button
+              key={key}
+              className={kind === key ? 'mode active' : 'mode'}
+              onClick={() => setKind(key)}
+              title={`${t.label} · ${t.neighbors} Nachbarn · ${ruleLabel(DEFAULT_RULES[key])}`}
+            >
+              {t.label}
+            </button>
+          ))}
+        </div>
 
         <div className="controls">
           <button
@@ -61,6 +82,9 @@ export default function App() {
         </div>
 
         <div className="stats">
+          <span className="rule" title="Geburts-/Überlebens-Regel & Nachbarzahl">
+            {TOPOLOGIES[kind].neighbors} Nb · <b>{ruleLabel(rule)}</b>
+          </span>
           <span>Gen <b>{stats.generation}</b></span>
           <span>Zellen <b>{stats.population}</b></span>
           {stats.lastPattern && (
@@ -71,6 +95,8 @@ export default function App() {
 
       <main className="board">
         <GameCanvas
+          kind={kind}
+          rule={rule}
           running={running}
           speed={speed}
           stepSignal={stepSignal}
@@ -83,7 +109,10 @@ export default function App() {
       <footer className="hint">
         Klicke auf eine freie Fläche, um ein zufälliges lebendes Gebilde in einer
         zufälligen Farbe zu erzeugen. Geborene Zellen erben die gemischte Farbe
-        ihrer Nachbarn — bei Kollisionen verschmelzen die Farben.
+        ihrer Nachbarn — bei Kollisionen verschmelzen die Farben. Über die Modi
+        oben wechselst du zwischen <b>Quadrat</b> (8 Nachbarn, Conway),{' '}
+        <b>Hexagon</b> (6 Nachbarn) und <b>Dreieck</b> (12 Nachbarn) — jede
+        Geometrie nutzt ihre eigene, dazu passende Regel.
       </footer>
 
       {showAbout && <AboutModal onClose={() => setShowAbout(false)} />}
