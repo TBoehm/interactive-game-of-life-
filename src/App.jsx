@@ -40,10 +40,7 @@ export default function App() {
         </div>
 
         <div className="controls">
-          <button
-            className={running ? 'btn primary' : 'btn'}
-            onClick={() => setRunning((r) => !r)}
-          >
+          <button className={running ? 'btn primary' : 'btn'} onClick={() => setRunning((r) => !r)}>
             {running ? '⏸ Pause' : '▶ Start'}
           </button>
           <button
@@ -85,10 +82,16 @@ export default function App() {
           <span className="rule" title="Geburts-/Überlebens-Regel & Nachbarzahl">
             {TOPOLOGIES[kind].neighbors} Nb · <b>{ruleLabel(rule)}</b>
           </span>
-          <span>Gen <b>{stats.generation}</b></span>
-          <span>Zellen <b>{stats.population}</b></span>
+          <span>
+            Gen <b>{stats.generation}</b>
+          </span>
+          <span>
+            Zellen <b>{stats.population}</b>
+          </span>
           {stats.lastPattern && (
-            <span className="last">zuletzt: <b>{stats.lastPattern}</b></span>
+            <span className="last">
+              zuletzt: <b>{stats.lastPattern}</b>
+            </span>
           )}
         </div>
       </header>
@@ -107,11 +110,10 @@ export default function App() {
       </main>
 
       <footer className="hint">
-        Klicke auf eine freie Fläche, um ein zufälliges lebendes Gebilde in einer
-        zufälligen Farbe zu erzeugen. Geborene Zellen erben die gemischte Farbe
-        ihrer Nachbarn — bei Kollisionen verschmelzen die Farben. Über die Modi
-        oben wechselst du zwischen <b>Quadrat</b> (8 Nachbarn, Conway),{' '}
-        <b>Hexagon</b> (6 Nachbarn) und <b>Dreieck</b> (12 Nachbarn) — jede
+        Klicke auf eine freie Fläche, um ein zufälliges lebendes Gebilde in einer zufälligen Farbe
+        zu erzeugen. Geborene Zellen erben die gemischte Farbe ihrer Nachbarn — bei Kollisionen
+        verschmelzen die Farben. Über die Modi oben wechselst du zwischen <b>Quadrat</b> (8
+        Nachbarn, Conway), <b>Hexagon</b> (6 Nachbarn) und <b>Dreieck</b> (12 Nachbarn) — jede
         Geometrie nutzt ihre eigene, dazu passende Regel.
       </footer>
 

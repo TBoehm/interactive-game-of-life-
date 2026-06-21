@@ -30,8 +30,12 @@ export default function GameCanvas({
 
   const runningRef = useRef(running)
   const speedRef = useRef(speed)
-  useEffect(() => { runningRef.current = running }, [running])
-  useEffect(() => { speedRef.current = speed }, [speed])
+  useEffect(() => {
+    runningRef.current = running
+  }, [running])
+  useEffect(() => {
+    speedRef.current = speed
+  }, [speed])
 
   const ruleKey = `${kind}:${rule.birth.join(',')}/${rule.survival.join(',')}`
 
@@ -165,9 +169,15 @@ export default function GameCanvas({
         for (let i = 0; i < size; i++) {
           const j = i * 4
           if (alive[i]) {
-            data[j] = r[i]; data[j + 1] = g[i]; data[j + 2] = b[i]; data[j + 3] = 255
+            data[j] = r[i]
+            data[j + 1] = g[i]
+            data[j + 2] = b[i]
+            data[j + 3] = 255
           } else {
-            data[j] = 14; data[j + 1] = 16; data[j + 2] = 24; data[j + 3] = 255
+            data[j] = 14
+            data[j + 1] = 16
+            data[j + 2] = 24
+            data[j + 3] = 255
           }
         }
         off.ctx.putImageData(image, 0, 0)
@@ -203,7 +213,10 @@ export default function GameCanvas({
     }
     rafRef.current = requestAnimationFrame(loop)
 
-    const onResize = () => { buildGrid(false); render() }
+    const onResize = () => {
+      buildGrid(false)
+      render()
+    }
     window.addEventListener('resize', onResize)
 
     return () => {

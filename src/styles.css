@@ -22,7 +22,13 @@ body,
 body {
   background: var(--bg);
   color: var(--text);
-  font-family: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  font-family:
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    'Segoe UI',
+    Roboto,
+    sans-serif;
 }
 
 .app {
@@ -77,7 +83,9 @@ body {
   border-radius: 8px;
   font-size: 13px;
   cursor: pointer;
-  transition: background 0.15s, color 0.15s;
+  transition:
+    background 0.15s,
+    color 0.15s;
 }
 
 .mode:hover {
@@ -106,7 +114,10 @@ body {
   border-radius: 9px;
   font-size: 13px;
   cursor: pointer;
-  transition: background 0.15s, border-color 0.15s, transform 0.05s;
+  transition:
+    background 0.15s,
+    border-color 0.15s,
+    transform 0.05s;
 }
 
 .btn:hover {
@@ -239,7 +250,7 @@ body {
   margin: 0 0 12px;
   line-height: 1.6;
   font-size: 14px;
-  color: #d4dAeb;
+  color: #d4daeb;
 }
 
 .modal ul {
@@ -247,7 +258,7 @@ body {
   padding-left: 20px;
   line-height: 1.6;
   font-size: 14px;
-  color: #d4dAeb;
+  color: #d4daeb;
 }
 
 .modal li {
@@ -286,11 +297,21 @@ body {
 }
 
 @keyframes fade {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 @keyframes pop {
-  from { opacity: 0; transform: translateY(8px) scale(0.98); }
-  to { opacity: 1; transform: translateY(0) scale(1); }
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }

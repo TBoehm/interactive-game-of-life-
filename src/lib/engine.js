@@ -59,8 +59,8 @@ export class Life {
     const { cols, rows } = this.topo
     const indices = []
     for (const [dx, dy] of cells) {
-      const x = ((originX + dx) % cols + cols) % cols
-      const y = ((originY + dy) % rows + rows) % rows
+      const x = (((originX + dx) % cols) + cols) % cols
+      const y = (((originY + dy) % rows) + rows) % rows
       indices.push(y * cols + x)
     }
     this.spawnCells(indices, color)

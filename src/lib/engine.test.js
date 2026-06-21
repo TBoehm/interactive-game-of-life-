@@ -43,10 +43,19 @@ describe('Conway rules on the square grid', () => {
   it('glider returns to its shape shifted by (1,1) after 4 generations', () => {
     const life = squareLife(16, 16)
     const idx = (x, y) => y * 16 + x
-    const glider = [[1, 0], [2, 1], [0, 2], [1, 2], [2, 2]]
+    const glider = [
+      [1, 0],
+      [2, 1],
+      [0, 2],
+      [1, 2],
+      [2, 2],
+    ]
     const ox = 5
     const oy = 5
-    life.spawnCells(glider.map(([x, y]) => idx(ox + x, oy + y)), WHITE)
+    life.spawnCells(
+      glider.map(([x, y]) => idx(ox + x, oy + y)),
+      WHITE,
+    )
 
     for (let i = 0; i < 4; i++) life.step()
 

@@ -89,8 +89,21 @@ function buildSquare(cols, rows, s, rule) {
     }
   }
 
-  return finalize('square', cols, rows, size, 8, neighbors, degree, rule,
-    cols * s, rows * s, polygons, centroidX, centroidY)
+  return finalize(
+    'square',
+    cols,
+    rows,
+    size,
+    8,
+    neighbors,
+    degree,
+    rule,
+    cols * s,
+    rows * s,
+    polygons,
+    centroidX,
+    centroidY,
+  )
 }
 
 // ---- Hexagonal (bounded, 6 neighbors, pointy-top odd-r offset) -------------
@@ -100,8 +113,22 @@ function buildHex(cols, rows, r, rule) {
   const idx = (c, rr) => rr * cols + c
 
   // redblobgames "odd-r" offset neighbor directions.
-  const dirsEven = [[1, 0], [0, -1], [-1, -1], [-1, 0], [-1, 1], [0, 1]]
-  const dirsOdd = [[1, 0], [1, -1], [0, -1], [-1, 0], [0, 1], [1, 1]]
+  const dirsEven = [
+    [1, 0],
+    [0, -1],
+    [-1, -1],
+    [-1, 0],
+    [-1, 1],
+    [0, 1],
+  ]
+  const dirsOdd = [
+    [1, 0],
+    [1, -1],
+    [0, -1],
+    [-1, 0],
+    [0, 1],
+    [1, 1],
+  ]
 
   const lists = new Array(size)
   for (let rr = 0; rr < rows; rr++) {
@@ -137,8 +164,21 @@ function buildHex(cols, rows, r, rule) {
     }
   }
 
-  return finalize('hex', cols, rows, size, 6, neighbors, degree, rule,
-    hexW * (cols + 0.5), 1.5 * r * rows + 0.5 * r, polygons, centroidX, centroidY)
+  return finalize(
+    'hex',
+    cols,
+    rows,
+    size,
+    6,
+    neighbors,
+    degree,
+    rule,
+    hexW * (cols + 0.5),
+    1.5 * r * rows + 0.5 * r,
+    polygons,
+    centroidX,
+    centroidY,
+  )
 }
 
 // ---- Triangular (bounded, 12 neighbors: edge + vertex touching) ------------
@@ -160,10 +200,12 @@ function buildTriangle(cols, rows, L, rule) {
       if (isUp(c, r)) {
         // up-triangle: 3 above, 5 below
         for (const nc of [c - 1, c, c + 1]) if (inB(nc, r - 1)) list.push(idx(nc, r - 1))
-        for (const nc of [c - 2, c - 1, c, c + 1, c + 2]) if (inB(nc, r + 1)) list.push(idx(nc, r + 1))
+        for (const nc of [c - 2, c - 1, c, c + 1, c + 2])
+          if (inB(nc, r + 1)) list.push(idx(nc, r + 1))
       } else {
         // down-triangle: 5 above, 3 below
-        for (const nc of [c - 2, c - 1, c, c + 1, c + 2]) if (inB(nc, r - 1)) list.push(idx(nc, r - 1))
+        for (const nc of [c - 2, c - 1, c, c + 1, c + 2])
+          if (inB(nc, r - 1)) list.push(idx(nc, r - 1))
         for (const nc of [c - 1, c, c + 1]) if (inB(nc, r + 1)) list.push(idx(nc, r + 1))
       }
       lists[idx(c, r)] = list
@@ -193,22 +235,59 @@ function buildTriangle(cols, rows, L, rule) {
     }
   }
 
-  return finalize('triangle', cols, rows, size, 12, neighbors, degree, rule,
-    cols * half + half, rows * h, polygons, centroidX, centroidY)
+  return finalize(
+    'triangle',
+    cols,
+    rows,
+    size,
+    12,
+    neighbors,
+    degree,
+    rule,
+    cols * half + half,
+    rows * h,
+    polygons,
+    centroidX,
+    centroidY,
+  )
 }
 
-function finalize(kind, cols, rows, size, maxDegree, neighbors, degree, rule,
-  canvasW, canvasH, polygons, centroidX, centroidY) {
+function finalize(
+  kind,
+  cols,
+  rows,
+  size,
+  maxDegree,
+  neighbors,
+  degree,
+  rule,
+  canvasW,
+  canvasH,
+  polygons,
+  centroidX,
+  centroidY,
+) {
   // Boolean lookup tables indexed by live-neighbor count.
   const birth = new Uint8Array(maxDegree + 1)
   const survival = new Uint8Array(maxDegree + 1)
   for (const n of rule.birth) if (n <= maxDegree) birth[n] = 1
   for (const n of rule.survival) if (n <= maxDegree) survival[n] = 1
   return {
-    kind, cols, rows, size, maxDegree,
-    neighbors, degree,
-    rule, birth, survival,
-    canvasW, canvasH, polygons, centroidX, centroidY,
+    kind,
+    cols,
+    rows,
+    size,
+    maxDegree,
+    neighbors,
+    degree,
+    rule,
+    birth,
+    survival,
+    canvasW,
+    canvasH,
+    polygons,
+    centroidX,
+    centroidY,
   }
 }
 

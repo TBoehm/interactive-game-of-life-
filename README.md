@@ -1,7 +1,7 @@
 # Interaktives Game of Life
 
 Ein interaktives Conway's Game of Life: Ein Klick auf eine freie Fläche lässt
-ein zufällig ausgewähltes *lebendes* Gebilde (Oszillator, Raumschiff, Methuselah
+ein zufällig ausgewähltes _lebendes_ Gebilde (Oszillator, Raumschiff, Methuselah
 oder eine Glider Gun) in einer **zufälligen Farbe, die sich vererbt und beim
 Wachsen mischt**, erscheinen.
 
@@ -12,12 +12,12 @@ Gebaut mit **React + Vite** und Canvas-Rendering. Gehostet über **GitHub Pages*
 ## Was es simuliert
 
 Es ist kein „Spiel" im klassischen Sinn (man gewinnt nicht), sondern eine
-**Simulation von künstlichem Leben** — ein *zellulärer Automat*, 1970 von John
+**Simulation von künstlichem Leben** — ein _zellulärer Automat_, 1970 von John
 Conway erfunden. Auf einem Gitter aus Zellen, die lebendig oder tot sind,
 entscheiden drei simple Regeln über die nächste Generation. Das Faszinierende:
 Aus diesen Mini-Regeln entsteht überraschend komplexes Verhalten — Strukturen
 pulsieren, wandern, kollidieren und vermehren sich ganz ohne zentrale
-Steuerung. Genau das ist *Emergenz*: ein komplexes Ganzes aus einfachen Teilen.
+Steuerung. Genau das ist _Emergenz_: ein komplexes Ganzes aus einfachen Teilen.
 
 Dieses Projekt erweitert die klassische Simulation um drei Ideen:
 
@@ -37,7 +37,9 @@ ein farbiges, sich selbst entwickelndes Leben entsteht.
 ## Mechanik
 
 ### Conway's Regeln
+
 Jede Zelle hat 8 Nachbarn und ist lebendig oder tot:
+
 - Eine **lebende** Zelle mit **2 oder 3** Nachbarn überlebt.
 - Eine **lebende** Zelle mit weniger als 2 (Einsamkeit) oder mehr als 3
   (Überbevölkerung) Nachbarn stirbt.
@@ -46,6 +48,7 @@ Jede Zelle hat 8 Nachbarn und ist lebendig oder tot:
 Das Gitter ist **toroidal** (Ränder verbunden), damit Raumschiffe endlos fliegen.
 
 ### Farbvererbung mit Mischung
+
 - Jedes neu gespawnte Gebilde bekommt eine zufällige, kräftige Farbe.
 - Überlebende Zellen behalten ihre Farbe.
 - Wird eine Zelle **geboren**, erbt sie den **Durchschnitt** der Farben ihrer
@@ -53,14 +56,16 @@ Das Gitter ist **toroidal** (Ränder verbunden), damit Raumschiffe endlos fliege
   ihre Farben dadurch organisch.
 
 ### Mustertypen (bewusst keine statischen „Still Lifes")
-| Kategorie | Verhalten | Enthaltene Muster |
-|-----------|-----------|-------------------|
-| Oszillator | kehrt periodisch zum Start zurück | Blinker, Toad, Beacon, Pulsar, Pentadecathlon |
-| Raumschiff | wandert über das Gitter | Glider, Lightweight Spaceship |
-| Methuselah | winziger Start, lange chaotische Entwicklung | R-Pentomino, Acorn, Diehard |
-| Gun | unbegrenztes Wachstum | Gosper Glider Gun (seltener) |
+
+| Kategorie  | Verhalten                                    | Enthaltene Muster                             |
+| ---------- | -------------------------------------------- | --------------------------------------------- |
+| Oszillator | kehrt periodisch zum Start zurück            | Blinker, Toad, Beacon, Pulsar, Pentadecathlon |
+| Raumschiff | wandert über das Gitter                      | Glider, Lightweight Spaceship                 |
+| Methuselah | winziger Start, lange chaotische Entwicklung | R-Pentomino, Acorn, Diehard                   |
+| Gun        | unbegrenztes Wachstum                        | Gosper Glider Gun (seltener)                  |
 
 ## Bedienung
+
 - **Klick** ins Feld → zufälliges Gebilde in zufälliger Farbe.
 - **▶/⏸** Start/Pause der Simulation.
 - **⏭ Schritt** – eine Generation weiter (nur im Pausemodus).
@@ -70,6 +75,7 @@ Das Gitter ist **toroidal** (Ränder verbunden), damit Raumschiffe endlos fliege
 - **Tempo** – Generationen pro Sekunde (1–60).
 
 ## Lokal entwickeln
+
 ```bash
 npm install
 npm run dev      # http://localhost:5173
@@ -78,16 +84,31 @@ npm run preview  # gebauten Build lokal ansehen
 ```
 
 ## Tests
+
 Die Simulationslogik (Engine + Topologie) ist mit **Vitest** abgedeckt — u. a.
 Conway-Regeln (Blinker, Block, Glider), Farbvererbung/-mischung,
 Nachbarschafts-Symmetrie aller drei Geometrien sowie Hit-Testing.
+
 ```bash
 npm test         # einmalig
 npm run test:watch
 ```
+
 Die Tests laufen auch im CI und müssen vor jedem Deploy grün sein.
 
+## Code-Qualität (ESLint + Prettier)
+
+```bash
+npm run lint          # ESLint (flat config, React-Hooks-Regeln)
+npm run format        # Prettier schreibt Formatierung
+npm run format:check  # Prettier prüft nur (CI)
+```
+
+ESLint und Prettier sind über `eslint-config-prettier` konfliktfrei aufeinander
+abgestimmt. Lint und Format-Check laufen im CI vor Tests und Build.
+
 ## Deployment (GitHub Pages)
+
 Der Workflow `.github/workflows/deploy.yml` baut bei jedem Push auf den
 Standard-Branch und veröffentlicht `dist/` auf GitHub Pages.
 
@@ -99,6 +120,7 @@ gesetzt (Repo-Name). Bei einem Fork oder umbenanntem Repo ist er dort
 entsprechend anzupassen.
 
 ## Projektstruktur
+
 ```
 src/
   lib/
@@ -112,4 +134,5 @@ src/
 ```
 
 ## Lizenz
+
 MIT — frei zur Nutzung, Veränderung und Weitergabe.
