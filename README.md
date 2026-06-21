@@ -1,13 +1,13 @@
 # Interaktives Game of Life
 
-Ein interaktives Conway's Game of Life: **Klicke auf eine freie Fläche** und es
-erscheint ein zufällig ausgewähltes *lebendes* Gebilde (Oszillator, Raumschiff,
-Methuselah oder eine Glider Gun) in einer **zufälligen Farbe, die sich vererbt
-und beim Wachsen mischt**.
+Ein interaktives Conway's Game of Life: Ein Klick auf eine freie Fläche lässt
+ein zufällig ausgewähltes *lebendes* Gebilde (Oszillator, Raumschiff, Methuselah
+oder eine Glider Gun) in einer **zufälligen Farbe, die sich vererbt und beim
+Wachsen mischt**, erscheinen.
 
 Gebaut mit **React + Vite** und Canvas-Rendering. Gehostet über **GitHub Pages**.
 
-➡️ Live: `https://<dein-github-name>.github.io/interactive-game-of-life-/`
+➡️ Live: <https://tboehm.github.io/interactive-game-of-life-/>
 
 ## Was es simuliert
 
@@ -21,9 +21,9 @@ Steuerung. Genau das ist *Emergenz*: ein komplexes Ganzes aus einfachen Teilen.
 
 Dieses Projekt erweitert die klassische Simulation um drei Ideen:
 
-1. **Klick zum Erschaffen** — statt einzelne Zellen zu setzen, klickst du auf
-   eine freie Fläche und ein komplettes, „lebendes" Gebilde erscheint, zufällig
-   aus einer Bibliothek bekannter Muster gewählt.
+1. **Klick zum Erschaffen** — statt einzelne Zellen zu setzen, genügt ein Klick
+   auf eine freie Fläche, und ein komplettes „lebendes" Gebilde erscheint,
+   zufällig aus einer Bibliothek bekannter Muster gewählt.
 2. **Nur bewegte Muster** — keine reglos dasitzenden Stillleben, sondern
    Oszillatoren, Raumschiffe, Methuselahs und eine Glider Gun.
 3. **Farben, die leben und sich vererben** — jedes Gebilde startet in einer
@@ -31,7 +31,7 @@ Dieses Projekt erweitert die klassische Simulation um drei Ideen:
    Kollidieren zwei Gebilde, verschmelzen ihre Farben zu Mischtönen.
 
 Das Ergebnis ist ein lebendiges, sich ständig veränderndes Bild — ein
-meditativer, generativer Sandkasten, in dem aus drei Regeln und deinen Klicks
+meditativer, generativer Sandkasten, in dem aus drei Regeln und ein paar Klicks
 ein farbiges, sich selbst entwickelndes Leben entsteht.
 
 ## Mechanik
@@ -66,6 +66,7 @@ Das Gitter ist **toroidal** (Ränder verbunden), damit Raumschiffe endlos fliege
 - **⏭ Schritt** – eine Generation weiter (nur im Pausemodus).
 - **✨ Zufall** – mehrere zufällige Gebilde verteilen.
 - **🗑 Leeren** – Feld zurücksetzen.
+- **ℹ Über** – Kurzerklärung im Overlay.
 - **Tempo** – Generationen pro Sekunde (1–60).
 
 ## Lokal entwickeln
@@ -78,22 +79,27 @@ npm run preview  # gebauten Build lokal ansehen
 
 ## Deployment (GitHub Pages)
 Der Workflow `.github/workflows/deploy.yml` baut bei jedem Push auf den
-Feature-Branch bzw. `main` und veröffentlicht `dist/` auf GitHub Pages.
+Standard-Branch und veröffentlicht `dist/` auf GitHub Pages.
 
-Einmalig im Repo aktivieren: **Settings → Pages → Build and deployment →
+Einmalig im Repo zu aktivieren: **Settings → Pages → Build and deployment →
 Source: „GitHub Actions"**.
 
 Der `base`-Pfad in `vite.config.js` ist auf `/interactive-game-of-life-/`
-gesetzt (Repo-Name). Bei Umbenennung des Repos hier anpassen.
+gesetzt (Repo-Name). Bei einem Fork oder umbenanntem Repo ist er dort
+entsprechend anzupassen.
 
 ## Projektstruktur
 ```
 src/
   lib/
-    engine.js     # Simulation: Schritt-Logik + Farbvererbung (typed arrays)
-    patterns.js   # Bibliothek der lebenden Muster
-    color.js      # HSL→RGB, zufällige Farbe
+    engine.js      # Simulation: Schritt-Logik + Farbvererbung (typed arrays)
+    patterns.js    # Bibliothek der lebenden Muster
+    color.js       # HSL→RGB, zufällige Farbe
   components/
-    GameCanvas.jsx# Canvas-Rendering, Render-Loop, Klick-Interaktion
-  App.jsx         # Steuerung & Layout
+    GameCanvas.jsx # Canvas-Rendering, Render-Loop, Klick-Interaktion
+    AboutModal.jsx # „Über"-Overlay mit Erklärung
+  App.jsx          # Steuerung & Layout
 ```
+
+## Lizenz
+MIT — frei zur Nutzung, Veränderung und Weitergabe.
