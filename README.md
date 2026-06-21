@@ -9,6 +9,31 @@ Gebaut mit **React + Vite** und Canvas-Rendering. Gehostet über **GitHub Pages*
 
 ➡️ Live: `https://<dein-github-name>.github.io/interactive-game-of-life-/`
 
+## Was es simuliert
+
+Es ist kein „Spiel" im klassischen Sinn (man gewinnt nicht), sondern eine
+**Simulation von künstlichem Leben** — ein *zellulärer Automat*, 1970 von John
+Conway erfunden. Auf einem Gitter aus Zellen, die lebendig oder tot sind,
+entscheiden drei simple Regeln über die nächste Generation. Das Faszinierende:
+Aus diesen Mini-Regeln entsteht überraschend komplexes Verhalten — Strukturen
+pulsieren, wandern, kollidieren und vermehren sich ganz ohne zentrale
+Steuerung. Genau das ist *Emergenz*: ein komplexes Ganzes aus einfachen Teilen.
+
+Dieses Projekt erweitert die klassische Simulation um drei Ideen:
+
+1. **Klick zum Erschaffen** — statt einzelne Zellen zu setzen, klickst du auf
+   eine freie Fläche und ein komplettes, „lebendes" Gebilde erscheint, zufällig
+   aus einer Bibliothek bekannter Muster gewählt.
+2. **Nur bewegte Muster** — keine reglos dasitzenden Stillleben, sondern
+   Oszillatoren, Raumschiffe, Methuselahs und eine Glider Gun.
+3. **Farben, die leben und sich vererben** — jedes Gebilde startet in einer
+   Zufallsfarbe; geborene Zellen erben den Farb-Durchschnitt ihrer Eltern.
+   Kollidieren zwei Gebilde, verschmelzen ihre Farben zu Mischtönen.
+
+Das Ergebnis ist ein lebendiges, sich ständig veränderndes Bild — ein
+meditativer, generativer Sandkasten, in dem aus drei Regeln und deinen Klicks
+ein farbiges, sich selbst entwickelndes Leben entsteht.
+
 ## Mechanik
 
 ### Conway's Regeln

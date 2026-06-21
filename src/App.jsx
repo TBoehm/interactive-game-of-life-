@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import GameCanvas from './components/GameCanvas'
+import AboutModal from './components/AboutModal'
 
 export default function App() {
   const [running, setRunning] = useState(true)
@@ -8,6 +9,7 @@ export default function App() {
   const [clearSignal, setClearSignal] = useState(0)
   const [randomSignal, setRandomSignal] = useState(0)
   const [stats, setStats] = useState({ generation: 0, population: 0, lastPattern: null })
+  const [showAbout, setShowAbout] = useState(false)
 
   return (
     <div className="app">
@@ -36,6 +38,13 @@ export default function App() {
           </button>
           <button className="btn" onClick={() => setClearSignal((s) => s + 1)}>
             🗑 Leeren
+          </button>
+          <button
+            className="btn"
+            onClick={() => setShowAbout(true)}
+            title="Was simuliert dieses Spiel?"
+          >
+            ℹ Über
           </button>
 
           <label className="speed">
@@ -76,6 +85,8 @@ export default function App() {
         zufälligen Farbe zu erzeugen. Geborene Zellen erben die gemischte Farbe
         ihrer Nachbarn — bei Kollisionen verschmelzen die Farben.
       </footer>
+
+      {showAbout && <AboutModal onClose={() => setShowAbout(false)} />}
     </div>
   )
 }

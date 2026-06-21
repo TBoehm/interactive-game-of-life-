@@ -161,3 +161,101 @@ body {
   line-height: 1.5;
   max-width: 820px;
 }
+
+/* ---- About modal ---------------------------------------------------------- */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(6, 8, 14, 0.72);
+  backdrop-filter: blur(3px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  z-index: 50;
+  animation: fade 0.15s ease-out;
+}
+
+.modal {
+  position: relative;
+  width: min(640px, 100%);
+  max-height: 86vh;
+  overflow-y: auto;
+  background: linear-gradient(180deg, var(--panel-2), var(--panel));
+  border: 1px solid #2c3450;
+  border-radius: 16px;
+  padding: 26px 28px;
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.6);
+  animation: pop 0.16s ease-out;
+}
+
+.modal h2 {
+  margin: 0 0 14px;
+  font-size: 20px;
+}
+
+.modal h3 {
+  margin: 22px 0 8px;
+  font-size: 15px;
+  color: var(--accent);
+}
+
+.modal p {
+  margin: 0 0 12px;
+  line-height: 1.6;
+  font-size: 14px;
+  color: #d4dAeb;
+}
+
+.modal ul {
+  margin: 0 0 12px;
+  padding-left: 20px;
+  line-height: 1.6;
+  font-size: 14px;
+  color: #d4dAeb;
+}
+
+.modal li {
+  margin-bottom: 6px;
+}
+
+.modal b {
+  color: var(--text);
+}
+
+.modal .modal-foot {
+  margin-top: 18px;
+  padding-top: 14px;
+  border-top: 1px solid #2c3450;
+  color: var(--muted);
+  font-style: italic;
+}
+
+.modal-close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  border: 1px solid #2c3450;
+  background: var(--panel);
+  color: var(--muted);
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.modal-close:hover {
+  color: var(--text);
+  background: #283050;
+}
+
+@keyframes fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes pop {
+  from { opacity: 0; transform: translateY(8px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
