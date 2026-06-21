@@ -111,6 +111,8 @@ Systems 15 (2005)](https://wpmedia.wolfram.com/sites/13/2018/02/15-3-4.pdf) ·
 - **⏭ Schritt** – eine Generation weiter (nur im Pausemodus).
 - **✨ Zufall** – mehrere zufällige Gebilde verteilen.
 - **🗑 Leeren** – Feld zurücksetzen.
+- **🌫 Fading an/aus** – sanftes Ein-/Ausblenden der Zellen umschalten (aus =
+  scharfes, sofortiges Umschalten).
 - **ℹ Über** – Kurzerklärung im Overlay.
 - **Tempo** – Generationen pro Sekunde (1–60).
 

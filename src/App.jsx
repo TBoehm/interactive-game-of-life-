@@ -15,6 +15,7 @@ export default function App() {
   const [randomSignal, setRandomSignal] = useState(0)
   const [stats, setStats] = useState({ generation: 0, population: 0, lastPattern: null })
   const [showAbout, setShowAbout] = useState(false)
+  const [fade, setFade] = useState(true)
 
   const rule = DEFAULT_RULES[kind]
 
@@ -55,6 +56,13 @@ export default function App() {
           </button>
           <button className="btn" onClick={() => setClearSignal((s) => s + 1)}>
             🗑 Leeren
+          </button>
+          <button
+            className={fade ? 'btn primary' : 'btn'}
+            onClick={() => setFade((f) => !f)}
+            title="Sanftes Ein-/Ausblenden der Zellen (gegen hartes Flackern)"
+          >
+            🌫 Fading {fade ? 'an' : 'aus'}
           </button>
           <button
             className="btn"
@@ -101,6 +109,7 @@ export default function App() {
             rule={rule}
             running={running}
             speed={speed}
+            fade={fade}
             stepSignal={stepSignal}
             clearSignal={clearSignal}
             randomSignal={randomSignal}
@@ -112,6 +121,7 @@ export default function App() {
             rule={rule}
             running={running}
             speed={speed}
+            fade={fade}
             stepSignal={stepSignal}
             clearSignal={clearSignal}
             randomSignal={randomSignal}

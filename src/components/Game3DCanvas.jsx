@@ -19,6 +19,7 @@ export default function Game3DCanvas({
   rule,
   running,
   speed,
+  fade,
   stepSignal,
   clearSignal,
   randomSignal,
@@ -36,12 +37,16 @@ export default function Game3DCanvas({
 
   const runningRef = useRef(running)
   const speedRef = useRef(speed)
+  const fadeRefProp = useRef(fade)
   useEffect(() => {
     runningRef.current = running
   }, [running])
   useEffect(() => {
     speedRef.current = speed
   }, [speed])
+  useEffect(() => {
+    fadeRefProp.current = fade
+  }, [fade])
 
   // ---- Spawning -------------------------------------------------------------
   // Either a harvested oscillator, or a dense random blob (which under Life 5766
@@ -189,7 +194,7 @@ export default function Game3DCanvas({
       }
       const dt = lastFrameRef.current ? ts - lastFrameRef.current : 16
       lastFrameRef.current = ts
-      syncInstances(easing(dt, fadeDuration(interval)))
+      syncInstances(fadeRefProp.current ? easing(dt, fadeDuration(interval)) : 1)
       controls.update()
       renderer.render(scene, camera)
       rafRef.current = requestAnimationFrame(loop)

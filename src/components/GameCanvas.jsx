@@ -16,6 +16,7 @@ export default function GameCanvas({
   rule,
   running,
   speed,
+  fade,
   stepSignal,
   clearSignal,
   randomSignal,
@@ -33,12 +34,16 @@ export default function GameCanvas({
 
   const runningRef = useRef(running)
   const speedRef = useRef(speed)
+  const fadeRefProp = useRef(fade)
   useEffect(() => {
     runningRef.current = running
   }, [running])
   useEffect(() => {
     speedRef.current = speed
   }, [speed])
+  useEffect(() => {
+    fadeRefProp.current = fade
+  }, [fade])
 
   const ruleKey = `${kind}:${rule.label}`
 
@@ -223,7 +228,7 @@ export default function GameCanvas({
         }
         const dt = lastFrameRef.current ? ts - lastFrameRef.current : 16
         lastFrameRef.current = ts
-        render(easing(dt, fadeDuration(interval)))
+        render(fadeRefProp.current ? easing(dt, fadeDuration(interval)) : 1)
       }
       rafRef.current = requestAnimationFrame(loop)
     }

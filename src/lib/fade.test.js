@@ -53,9 +53,9 @@ describe('easing', () => {
 })
 
 describe('fadeDuration', () => {
-  it('is clamped to a visible-but-not-smearing range', () => {
-    expect(fadeDuration(10)).toBe(90)
-    expect(fadeDuration(1000)).toBe(320)
-    expect(fadeDuration(200)).toBeCloseTo(180)
+  it('is clamped to a brisk, visible range', () => {
+    expect(fadeDuration(10)).toBe(45)
+    expect(fadeDuration(1000)).toBe(160)
+    expect(fadeDuration(200)).toBeCloseTo(90)
   })
 })

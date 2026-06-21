@@ -40,8 +40,9 @@ export function easing(dtMs, fadeMs) {
 }
 
 // Fade duration tied to the generation interval: long enough to be visible,
-// short enough not to smear fast oscillators.
+// short enough not to smear fast oscillators (kept brisk so it doesn't look
+// washed out).
 export function fadeDuration(stepIntervalMs) {
-  const d = stepIntervalMs * 0.9
-  return d < 90 ? 90 : d > 320 ? 320 : d
+  const d = stepIntervalMs * 0.45
+  return d < 45 ? 45 : d > 160 ? 160 : d
 }
