@@ -8,4 +8,8 @@ import react from '@vitejs/plugin-react'
 export default defineConfig(({ mode }) => ({
   base: mode === 'production' ? '/interactive-game-of-life-/' : '/',
   plugins: [react()],
+  test: {
+    environment: 'jsdom',
+    setupFiles: ['./src/test/setup.js'],
+  },
 }))
