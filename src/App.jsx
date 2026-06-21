@@ -15,7 +15,7 @@ export default function App() {
   const [randomSignal, setRandomSignal] = useState(0)
   const [stats, setStats] = useState({ generation: 0, population: 0, lastPattern: null })
   const [showAbout, setShowAbout] = useState(false)
-  const [fade, setFade] = useState(true)
+  const [fade, setFade] = useState(false)
 
   const rule = DEFAULT_RULES[kind]
 

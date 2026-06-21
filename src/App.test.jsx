@@ -57,9 +57,9 @@ describe('App UI', () => {
   it('toggles the fading control', () => {
     render(<App />)
     const btn = screen.getByRole('button', { name: /Fading/ })
-    expect(btn.textContent).toContain('an')
+    expect(btn.textContent).toContain('aus') // off by default
     fireEvent.click(btn)
-    expect(screen.getByRole('button', { name: /Fading/ }).textContent).toContain('aus')
+    expect(screen.getByRole('button', { name: /Fading/ }).textContent).toContain('an')
   })
 
   it('opens and closes the About modal', () => {
