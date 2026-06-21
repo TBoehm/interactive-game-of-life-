@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react'
 import { Life } from '../lib/engine'
 import { randomColor } from '../lib/color'
-import { randomPattern, randomHexPattern, patternSize } from '../lib/patterns'
+import { randomPattern, randomHexPattern, randomTriPattern, patternSize } from '../lib/patterns'
 import { createTopology, cellAt } from '../lib/topology'
 
 // Pixel size per cell, chosen per topology (hex/triangle look better larger).
@@ -56,46 +56,31 @@ export default function GameCanvas({
       return pattern.name
     }
 
+    // Hex (B2o/S2m34H) and triangle (Bays Life 4546) both spawn real creatures
+    // harvested offline. Their coordinates are parity-sensitive: hex assumes an
+    // even-row origin; triangle assumes an even (col+row) origin (which fixes
+    // the up/down triangle orientation). Snap the origin accordingly.
+    const pattern = topo.kind === 'hex' ? randomHexPattern() : randomTriPattern()
+    const { width, height } = patternSize(pattern)
+    const cx = cellIndex % topo.cols
+    const cy = (cellIndex / topo.cols) | 0
+    const ox = cx - (width >> 1)
+    let oy = cy - (height >> 1)
     if (topo.kind === 'hex') {
-      // Real B2o/S2m34H creatures (flippers, 2c/4 spaceships, P4 oscillators),
-      // harvested offline. Coordinates assume an even-row origin, so snap the
-      // origin row to even to preserve the parity-sensitive neighbor layout.
-      const pattern = randomHexPattern()
-      const { width, height } = patternSize(pattern)
-      const cx = cellIndex % topo.cols
-      const cy = (cellIndex / topo.cols) | 0
-      const ox = cx - (width >> 1)
-      let oy = cy - (height >> 1)
       if (oy & 1) oy -= 1
-      const indices = []
-      for (const [dx, dy] of pattern.cells) {
-        const col = ox + dx
-        const row = oy + dy
-        if (col >= 0 && col < topo.cols && row >= 0 && row < topo.rows) {
-          indices.push(row * topo.cols + col)
-        }
-      }
-      life.spawnCells(indices, color)
-      return pattern.name
+    } else if ((ox + oy) & 1) {
+      oy -= 1
     }
-
-    // Triangle: named patterns don't translate, so seed a small random cluster
-    // (a "soup blob") around the clicked cell and let the rule evolve.
-    const indices = new Set([cellIndex])
-    const { neighbors, degree, maxDegree } = topo
-    const base = cellIndex * maxDegree
-    for (let k = 0; k < degree[cellIndex]; k++) {
-      if (Math.random() < 0.7) indices.add(neighbors[base + k])
-    }
-    // a few second-ring cells for variety
-    for (const i of Array.from(indices)) {
-      const b2 = i * maxDegree
-      for (let k = 0; k < degree[i]; k++) {
-        if (Math.random() < 0.2) indices.add(neighbors[b2 + k])
+    const indices = []
+    for (const [dx, dy] of pattern.cells) {
+      const col = ox + dx
+      const row = oy + dy
+      if (col >= 0 && col < topo.cols && row >= 0 && row < topo.rows) {
+        indices.push(row * topo.cols + col)
       }
     }
     life.spawnCells(indices, color)
-    return 'Cluster'
+    return pattern.name
   }
 
   function spawnRandomLocation() {

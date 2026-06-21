@@ -75,14 +75,15 @@ export default function AboutModal({ onClose }) {
             Raumschiff und ist Turing-vollständig.
           </li>
           <li>
-            <b>Dreieck</b> — 12 Nachbarn (Kanten + Ecken). Wenig erforschtes Terrain; die Regel
-            B45/S345 wurde auf lebendiges, begrenztes Verhalten abgestimmt.
+            <b>Dreieck</b> — 12 Nachbarn (Kanten + Ecken), exakt Bays' Dreiecksnachbarschaft.
+            Verwendet seine validierte Regel <b>B456/S45</b> („Life 4546", Bays 1994) — eine echte
+            Game-of-Life-Regel mit Gleitern und vielen Oszillatoren.
           </li>
         </ul>
         <p>
-          Im Hex-Modus setzt ein Klick echte, offline verifizierte Kreaturen (Flipper, Raumschiffe);
-          im Dreieck-Modus eine kleine Zufalls-Wolke. Die klassischen Quadrat-Figuren (Glider,
-          Pulsar …) sind nur auf dem Quadratgitter definiert.
+          In Hex- und Dreieck-Modus setzt ein Klick echte, offline gegen die jeweilige Regel
+          verifizierte Kreaturen (Flipper, Oszillatoren, Raumschiffe). Die klassischen
+          Quadrat-Figuren (Glider, Pulsar …) sind nur auf dem Quadratgitter definiert.
         </p>
 
         <p className="modal-foot">

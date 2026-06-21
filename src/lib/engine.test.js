@@ -180,7 +180,7 @@ describe('non-totalistic hex rule B2o/S2m34H', () => {
   })
 })
 
-describe('triangle topology', () => {
+describe('triangle topology (Bays Life 4546, B456/S45)', () => {
   it('triangle engine advances without error and stays bounded', () => {
     const topo = createTopology('triangle', 30, 30, 10, DEFAULT_RULES.triangle)
     const life = new Life(topo)
@@ -191,5 +191,28 @@ describe('triangle topology', () => {
     expect(life.population).toBeGreaterThanOrEqual(0)
     expect(life.population).toBeLessThanOrEqual(topo.size)
     expect(life.generation).toBe(50)
+  })
+
+  it('runs a harvested period-2 oscillator', () => {
+    const topo = createTopology('triangle', 30, 30, 10, DEFAULT_RULES.triangle)
+    const life = new Life(topo)
+    const oc = 12
+    const orr = 12 // (oc + orr) even
+    const osc = [
+      [0, 1],
+      [1, 1],
+      [1, 2],
+      [2, 2],
+      [3, 2],
+    ]
+    life.spawnCells(
+      osc.map(([c, r]) => (orr + r) * 30 + (oc + c)),
+      WHITE,
+    )
+    const g0 = liveSet(life)
+    life.step()
+    life.step()
+    expect(liveSet(life)).toEqual(g0) // returns to itself after 2 generations
+    expect(life.population).toBeGreaterThan(0)
   })
 })

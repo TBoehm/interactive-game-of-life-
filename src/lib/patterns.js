@@ -341,6 +341,114 @@ export function randomHexPattern() {
   return HEX_PATTERNS[Math.floor(Math.random() * HEX_PATTERNS.length)]
 }
 
+// Triangular patterns for Bays' rule "Life 4546" (B456/S45) on the 12-neighbor
+// triangular grid. Harvested and verified offline against the actual rule
+// (period-2 and period-3 oscillators, the 2c/8 spaceship). Coordinates are
+// (col, row) and assume an origin where (col + row) is EVEN (the triangle
+// orientation, up vs down, depends on that parity), so the spawner snaps the
+// origin to even parity.
+export const TRI_PATTERNS = [
+  {
+    name: 'Oszillator P2',
+    category: 'Oszillator',
+    cells: [
+      [0, 1],
+      [1, 1],
+      [1, 2],
+      [2, 2],
+      [3, 2],
+    ],
+  },
+  {
+    name: 'Oszillator P2',
+    category: 'Oszillator',
+    cells: [
+      [1, 1],
+      [2, 1],
+      [3, 1],
+      [4, 0],
+      [4, 1],
+    ],
+  },
+  {
+    name: 'Oszillator P2',
+    category: 'Oszillator',
+    cells: [
+      [0, 1],
+      [1, 0],
+      [2, 0],
+      [2, 1],
+      [3, 1],
+    ],
+  },
+  {
+    name: 'Oszillator P3',
+    category: 'Oszillator',
+    cells: [
+      [1, 1],
+      [2, 0],
+      [2, 1],
+      [3, 1],
+      [3, 2],
+      [4, 1],
+    ],
+  },
+  {
+    name: 'Oszillator P3',
+    category: 'Oszillator',
+    cells: [
+      [0, 1],
+      [0, 2],
+      [1, 1],
+      [1, 2],
+      [2, 1],
+      [2, 2],
+    ],
+  },
+  {
+    name: 'Oszillator P3',
+    category: 'Oszillator',
+    cells: [
+      [0, 2],
+      [1, 1],
+      [1, 2],
+      [2, 2],
+      [2, 3],
+      [3, 2],
+    ],
+  },
+  {
+    name: 'Raumschiff (2c/8)',
+    category: 'Raumschiff',
+    cells: [
+      [0, 1],
+      [0, 2],
+      [1, 1],
+      [1, 2],
+      [2, 3],
+      [3, 1],
+      [4, 1],
+    ],
+  },
+  {
+    name: 'Raumschiff (2c/8)',
+    category: 'Raumschiff',
+    cells: [
+      [0, 1],
+      [1, 1],
+      [2, 3],
+      [3, 1],
+      [3, 2],
+      [4, 1],
+      [4, 2],
+    ],
+  },
+]
+
+export function randomTriPattern() {
+  return TRI_PATTERNS[Math.floor(Math.random() * TRI_PATTERNS.length)]
+}
+
 // Bounding-box dimensions of a pattern, so it can be centered on the click.
 export function patternSize(pattern) {
   let maxX = 0

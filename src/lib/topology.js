@@ -12,8 +12,10 @@
 //                 1997): birth/survival depend on the *arrangement* of neighbors
 //                 (ortho/meta/para), not just the count. It has oscillators
 //                 (flippers p2/4/8) and a 2c/4 spaceship, and is Turing-complete.
-//   - Triangular: 12 neighbors (edge + vertex touching). Totalistic rule tuned
-//                 offline for lively, bounded behavior.
+//   - Triangular: 12 neighbors (edge + vertex touching) — exactly Bays' (1994)
+//                 triangular neighborhood. We use his validated GL rule
+//                 "Life 4546" (B456/S45): bounded growth with gliders, the
+//                 richest of his six triangular Life rules in oscillators.
 //
 // A topology exposes everything the engine and renderer need:
 //   cols, rows, size, maxDegree, neighbors[], degree[], rule, geometry, and —
@@ -34,7 +36,8 @@ export const TOPOLOGIES = {
 export const DEFAULT_RULES = {
   square: { type: 'totalistic', label: 'B3/S23', birth: [3], survival: [2, 3] },
   hex: { type: 'int-hex', label: 'B2o/S2m34H' },
-  triangle: { type: 'totalistic', label: 'B45/S345', birth: [4, 5], survival: [3, 4, 5] },
+  // Bays Life 4546 (E4-5/F4-6): a validated triangular Game-of-Life rule.
+  triangle: { type: 'totalistic', label: 'B456/S45', birth: [4, 5, 6], survival: [4, 5] },
 }
 
 export function createTopology(kind, cols, rows, cellPx, rule) {

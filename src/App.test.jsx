@@ -18,7 +18,7 @@ describe('App UI', () => {
     expect(screen.getByText('B2o/S2m34H')).toBeTruthy()
 
     fireEvent.click(screen.getByRole('button', { name: 'Dreieck' }))
-    expect(screen.getByText('B45/S345')).toBeTruthy()
+    expect(screen.getByText('B456/S45')).toBeTruthy()
   })
 
   it('marks the selected mode active', () => {

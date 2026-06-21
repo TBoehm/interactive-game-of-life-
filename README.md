@@ -73,17 +73,24 @@ Nachbarzahl und brauchen daher eine andere Regel.
 | ------- | -------- | ------------ | ------------------------------------------------------------------------------ |
 | Quadrat | 8        | `B3/S23`     | Conways klassische Regel.                                                      |
 | Hexagon | 6        | `B2o/S2m34H` | **Nicht-totalistisch** (Callahan 1997): es zählt die _Anordnung_ der Nachbarn. |
-| Dreieck | 12       | `B45/S345`   | Totalistisch, offline auf lebendiges, begrenztes Verhalten getunt.             |
+| Dreieck | 12       | `B456/S45`   | Bays' validierte GL-Regel „Life 4546" (Bays 1994), reich an Oszillatoren.      |
 
 Warum nicht totalistisch beim Hexagon? Bays (2005) zeigte, dass _zählende_
 6-Nachbar-Hexregeln keine echte „Game of Life"-Regel ergeben — Muster zerfallen
 zu Staub. Die isotrope nicht-totalistische Regel **B2o/S2m34H** unterscheidet
 dagegen die Anordnung der Nachbarn (ortho/meta/para) und hat echte Oszillatoren
-(Flipper P2/4/8), ein 2c/4-Raumschiff und ist sogar Turing-vollständig. Die
-Hex-Kreaturen wurden offline gegen diese Regel verifiziert (`src/lib/*.test.js`).
+(Flipper P2/4/8), ein 2c/4-Raumschiff und ist sogar Turing-vollständig.
+
+Beim Dreieck ist das 12-Nachbar-Gitter exakt Bays' (1994) Dreiecksnachbarschaft.
+Statt einer selbst getunten Regel nutzen wir seine validierte GL-Regel **„Life
+4546"** (`B456/S45`) — begrenztes Wachstum mit Gleitern und (laut Bays) die
+ergiebigste seiner sechs Dreiecksregeln. Die Hex- und Dreieck-Kreaturen wurden
+offline gegen die jeweilige Regel geerntet und verifiziert (`src/lib/*.test.js`).
 
 Quellen: [Bays, _Game of Life in Hexagonal and Pentagonal Tessellations_, Complex
 Systems 15 (2005)](https://wpmedia.wolfram.com/sites/13/2018/02/15-3-4.pdf) ·
+[Bays, _Cellular Automata in the Triangular Tessellation_, Complex Systems 8
+(1994)](https://content.wolfram.com/sites/13/2018/02/08-2-4.pdf) ·
 [LifeWiki: B2o/S2m34H](https://conwaylife.com/wiki/OCA:B2o/S2m34H) ·
 [LifeWiki: Hexagonal neighbourhood](https://conwaylife.com/wiki/Hexagonal_neighbourhood)
 
