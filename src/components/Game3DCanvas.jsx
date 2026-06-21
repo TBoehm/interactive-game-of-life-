@@ -5,6 +5,7 @@ import { Life } from '../lib/engine'
 import { create3DTopology } from '../lib/topology'
 import { randomColor } from '../lib/color'
 import { randomLife3dPattern } from '../lib/patterns'
+import { createFadeState, stepFade, easing, fadeDuration } from '../lib/fade'
 
 const GRID = 26 // nx = ny = nz
 const SPACING = 1 // distance between cell centers
@@ -28,8 +29,10 @@ export default function Game3DCanvas({
   const topoRef = useRef(null)
   const meshRef = useRef(null)
   const threeRef = useRef(null)
+  const fadeRef = useRef(null)
   const rafRef = useRef(0)
   const lastStepRef = useRef(0)
+  const lastFrameRef = useRef(0)
 
   const runningRef = useRef(running)
   const speedRef = useRef(speed)
@@ -141,21 +144,28 @@ export default function Game3DCanvas({
     const offset = (GRID - 1) / 2
     const dummy = new THREE.Object3D()
     const color = new THREE.Color()
+    const fade = createFadeState(topo.size)
+    fadeRef.current = fade
 
-    function syncInstances() {
+    // Rebuild instances from the fade state: fading-in cells grow and brighten,
+    // fading-out cells shrink and dim toward the (dark) background.
+    function syncInstances(k) {
       const life = lifeRef.current
-      const { alive, r, g, b, size } = life
+      stepFade(fade, life, k)
+      const { fade: f, r, g, b } = fade
       const { nx, ny } = topo
       let n = 0
-      for (let i = 0; i < size; i++) {
-        if (!alive[i]) continue
+      for (let i = 0; i < topo.size; i++) {
+        const a = f[i]
+        if (a < 0.03) continue
         const x = i % nx
         const y = ((i / nx) | 0) % ny
         const z = (i / (nx * ny)) | 0
         dummy.position.set((x - offset) * SPACING, (y - offset) * SPACING, (z - offset) * SPACING)
+        dummy.scale.setScalar(a)
         dummy.updateMatrix()
         mesh.setMatrixAt(n, dummy.matrix)
-        color.setRGB(r[i] / 255, g[i] / 255, b[i] / 255)
+        color.setRGB((r[i] / 255) * a, (g[i] / 255) * a, (b[i] / 255) * a)
         mesh.setColorAt(n, color)
         n++
       }
@@ -166,17 +176,20 @@ export default function Game3DCanvas({
 
     // initial seed
     for (let i = 0; i < 4; i++) spawnRandomLocation()
-    syncInstances()
+    syncInstances(1)
     onStats?.({ generation: 0, population: lifeRef.current.population })
 
     function loop(ts) {
       const life = lifeRef.current
-      if (runningRef.current && ts - lastStepRef.current >= 1000 / speedRef.current) {
+      const interval = 1000 / speedRef.current
+      if (runningRef.current && ts - lastStepRef.current >= interval) {
         life.step()
         lastStepRef.current = ts
-        syncInstances()
         onStats?.({ generation: life.generation, population: life.population })
       }
+      const dt = lastFrameRef.current ? ts - lastFrameRef.current : 16
+      lastFrameRef.current = ts
+      syncInstances(easing(dt, fadeDuration(interval)))
       controls.update()
       renderer.render(scene, camera)
       rafRef.current = requestAnimationFrame(loop)
@@ -193,7 +206,7 @@ export default function Game3DCanvas({
     const onUp = (e) => {
       if (Math.hypot(e.clientX - downX, e.clientY - downY) < 5) {
         const name = spawnRandomLocation()
-        syncInstances()
+        // the render loop picks up the new cells on the next frame
         onStats?.({
           generation: lifeRef.current.generation,
           population: lifeRef.current.population,
@@ -212,9 +225,6 @@ export default function Game3DCanvas({
       renderer.setSize(w, h)
     }
     window.addEventListener('resize', onResize)
-
-    // expose syncInstances for the control-signal effects
-    threeRef.current.sync = syncInstances
 
     return () => {
       cancelAnimationFrame(rafRef.current)
@@ -238,7 +248,6 @@ export default function Game3DCanvas({
     const life = lifeRef.current
     if (life) {
       life.step()
-      threeRef.current?.sync?.()
       onStats?.({ generation: life.generation, population: life.population })
     }
   }, [stepSignal]) // eslint-disable-line react-hooks/exhaustive-deps
@@ -248,7 +257,6 @@ export default function Game3DCanvas({
     const life = lifeRef.current
     if (life) {
       life.clear()
-      threeRef.current?.sync?.()
       onStats?.({ generation: 0, population: 0 })
     }
   }, [clearSignal]) // eslint-disable-line react-hooks/exhaustive-deps
@@ -258,7 +266,6 @@ export default function Game3DCanvas({
     const life = lifeRef.current
     if (life) {
       for (let i = 0; i < 4; i++) spawnRandomLocation()
-      threeRef.current?.sync?.()
       onStats?.({ generation: life.generation, population: life.population })
     }
   }, [randomSignal]) // eslint-disable-line react-hooks/exhaustive-deps

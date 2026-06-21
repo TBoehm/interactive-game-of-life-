@@ -3,6 +3,7 @@ import { Life } from '../lib/engine'
 import { randomColor } from '../lib/color'
 import { randomPattern, randomHexPattern, randomTriPattern, patternSize } from '../lib/patterns'
 import { createTopology, cellAt } from '../lib/topology'
+import { createFadeState, stepFade, easing, fadeDuration } from '../lib/fade'
 
 // Pixel size per cell, chosen per topology (hex/triangle look better larger).
 const CELL_PX = { square: 8, hex: 12, triangle: 16 }
@@ -25,8 +26,10 @@ export default function GameCanvas({
   const topoRef = useRef(null)
   const pathsRef = useRef(null) // Path2D[] for hex/triangle
   const offscreenRef = useRef(null) // {canvas, ctx, image} for square
+  const fadeRef = useRef(null) // per-cell fade state for cross-fading
   const rafRef = useRef(0)
   const lastStepRef = useRef(0)
+  const lastFrameRef = useRef(0)
 
   const runningRef = useRef(running)
   const speedRef = useRef(speed)
@@ -158,50 +161,53 @@ export default function GameCanvas({
 
       const life = new Life(topo)
       lifeRef.current = life
+      fadeRef.current = createFadeState(topo.size)
       if (seed) for (let i = 0; i < 3; i++) spawnRandomLocation()
       onStats?.({ generation: 0, population: life.population })
     }
 
     buildGrid(true)
 
-    function render() {
+    // Background color (matches --bg), used as the fade floor.
+    const BG = [14, 16, 24]
+
+    function render(k) {
       const life = lifeRef.current
       const topo = topoRef.current
-      if (!life || !topo) return
+      const fs = fadeRef.current
+      if (!life || !topo || !fs) return
+      stepFade(fs, life, k)
+      const { fade, r, g, b } = fs
+      const { size } = life
 
       if (topo.kind === 'square') {
         const off = offscreenRef.current
-        const { image } = off
-        const data = image.data
-        const { alive, r, g, b, size } = life
+        const data = off.image.data
         for (let i = 0; i < size; i++) {
+          const f = fade[i]
           const j = i * 4
-          if (alive[i]) {
-            data[j] = r[i]
-            data[j + 1] = g[i]
-            data[j + 2] = b[i]
-            data[j + 3] = 255
-          } else {
-            data[j] = 14
-            data[j + 1] = 16
-            data[j + 2] = 24
-            data[j + 3] = 255
-          }
+          data[j] = BG[0] + (r[i] - BG[0]) * f
+          data[j + 1] = BG[1] + (g[i] - BG[1]) * f
+          data[j + 2] = BG[2] + (b[i] - BG[2]) * f
+          data[j + 3] = 255
         }
-        off.ctx.putImageData(image, 0, 0)
+        off.ctx.putImageData(off.image, 0, 0)
         ctx.imageSmoothingEnabled = false
         ctx.drawImage(off.canvas, 0, 0, topo.canvasW, topo.canvasH)
         return
       }
 
-      // Hex / triangle: fill live polygons over a dark background.
+      // Hex / triangle: fill cells, blended toward the background by fade.
       const paths = pathsRef.current
       ctx.fillStyle = '#0e1018'
       ctx.fillRect(0, 0, topo.canvasW + cellPx, topo.canvasH + cellPx)
-      const { alive, r, g, b, size } = life
       for (let i = 0; i < size; i++) {
-        if (!alive[i]) continue
-        ctx.fillStyle = `rgb(${r[i]},${g[i]},${b[i]})`
+        const f = fade[i]
+        if (f < 0.02) continue
+        const cr = (BG[0] + (r[i] - BG[0]) * f) | 0
+        const cg = (BG[1] + (g[i] - BG[1]) * f) | 0
+        const cb = (BG[2] + (b[i] - BG[2]) * f) | 0
+        ctx.fillStyle = `rgb(${cr},${cg},${cb})`
         ctx.fill(paths[i])
       }
     }
@@ -215,7 +221,9 @@ export default function GameCanvas({
           lastStepRef.current = ts
           onStats?.({ generation: life.generation, population: life.population })
         }
-        render()
+        const dt = lastFrameRef.current ? ts - lastFrameRef.current : 16
+        lastFrameRef.current = ts
+        render(easing(dt, fadeDuration(interval)))
       }
       rafRef.current = requestAnimationFrame(loop)
     }
@@ -223,7 +231,7 @@ export default function GameCanvas({
 
     const onResize = () => {
       buildGrid(false)
-      render()
+      render(1)
     }
     window.addEventListener('resize', onResize)
 
