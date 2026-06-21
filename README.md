@@ -77,6 +77,16 @@ npm run build    # Production-Build nach dist/
 npm run preview  # gebauten Build lokal ansehen
 ```
 
+## Tests
+Die Simulationslogik (Engine + Topologie) ist mit **Vitest** abgedeckt — u. a.
+Conway-Regeln (Blinker, Block, Glider), Farbvererbung/-mischung,
+Nachbarschafts-Symmetrie aller drei Geometrien sowie Hit-Testing.
+```bash
+npm test         # einmalig
+npm run test:watch
+```
+Die Tests laufen auch im CI und müssen vor jedem Deploy grün sein.
+
 ## Deployment (GitHub Pages)
 Der Workflow `.github/workflows/deploy.yml` baut bei jedem Push auf den
 Standard-Branch und veröffentlicht `dist/` auf GitHub Pages.
