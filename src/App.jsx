@@ -60,7 +60,7 @@ export default function App() {
           <button
             className={fade ? 'btn primary' : 'btn'}
             onClick={() => setFade((f) => !f)}
-            title="Sanftes Ein-/Ausblenden der Zellen (gegen hartes Flackern)"
+            title="Sanftes Ein und Ausblenden der Zellen (gegen hartes Flackern)"
           >
             🌫 Fading {fade ? 'an' : 'aus'}
           </button>
@@ -86,7 +86,7 @@ export default function App() {
         </div>
 
         <div className="stats">
-          <span className="rule" title="Geburts-/Überlebens-Regel & Nachbarzahl">
+          <span className="rule" title="Regel für Geburt und Überleben sowie Nachbarzahl">
             {TOPOLOGIES[kind].neighbors} Nb · <b>{ruleLabel(rule)}</b>
           </span>
           <span>
@@ -132,11 +132,11 @@ export default function App() {
 
       <footer className="hint">
         Klicke auf eine freie Fläche, um ein zufälliges lebendes Gebilde in einer zufälligen Farbe
-        zu erzeugen. Geborene Zellen erben die gemischte Farbe ihrer Nachbarn — bei Kollisionen
+        zu erzeugen. Geborene Zellen erben die gemischte Farbe ihrer Nachbarn; bei Kollisionen
         verschmelzen die Farben. Über die Modi oben wechselst du zwischen <b>Quadrat</b> (8
         Nachbarn, Conway), <b>Hexagon</b> (6 Nachbarn), <b>Dreieck</b> (12 Nachbarn) und <b>3D</b>{' '}
-        (26 Nachbarn, Bays Life 5766) — jede Geometrie nutzt ihre eigene, dazu passende Regel. Im
-        3D-Modus drehst du die Ansicht per Maus.
+        (26 Nachbarn, Bays Life 5766); jede Geometrie nutzt ihre eigene, dazu passende Regel. Im 3D
+        Modus drehst du die Ansicht per Maus.
         <span className="credit">
           {' · Agentic Pairing & mehr: '}
           <a href="https://toboehm.de" target="_blank" rel="noopener noreferrer">

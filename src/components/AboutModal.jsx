@@ -17,7 +17,7 @@ export default function AboutModal({ onClose }) {
 
         <p>
           Es ist kein „Spiel" im klassischen Sinn (man gewinnt nicht), sondern eine{' '}
-          <b>Simulation von künstlichem Leben</b> — ein <i>zellulärer Automat</i>, 1970 vom
+          <b>Simulation von künstlichem Leben</b>: ein <i>zellulärer Automat</i>, 1970 vom
           Mathematiker John Conway erfunden. Auf einem Gitter aus Zellen, die{' '}
           <b>lebendig oder tot</b> sind, entscheiden drei simple Regeln über die nächste Generation:
         </p>
@@ -36,8 +36,8 @@ export default function AboutModal({ onClose }) {
         </ul>
 
         <p>
-          Aus diesen Mini-Regeln entsteht überraschend komplexes Verhalten: Strukturen pulsieren,
-          wandern, kollidieren und vermehren sich — ganz ohne zentrale Steuerung. Das ist{' '}
+          Aus diesen winzigen Regeln entsteht überraschend komplexes Verhalten: Strukturen
+          pulsieren, wandern, kollidieren und vermehren sich, ganz ohne zentrale Steuerung. Das ist{' '}
           <b>Emergenz</b>: ein komplexes Ganzes aus einfachen Teilen.
         </p>
 
@@ -45,7 +45,7 @@ export default function AboutModal({ onClose }) {
         <ul>
           <li>
             <b>Klick zum Erschaffen:</b> Klicke auf eine freie Fläche, und ein komplettes,
-            „lebendes" Gebilde erscheint — zufällig aus einer Bibliothek bekannter Muster gewählt.
+            „lebendes" Gebilde erscheint, zufällig aus einer Bibliothek bekannter Muster gewählt.
           </li>
           <li>
             <b>Nur bewegte Muster:</b> keine reglosen Stillleben, sondern Oszillatoren (Pulsar,
@@ -53,46 +53,46 @@ export default function AboutModal({ onClose }) {
           </li>
           <li>
             <b>Farben, die leben und sich vererben:</b> Jedes Gebilde startet in einer Zufallsfarbe;
-            geborene Zellen erben den Farb-Durchschnitt ihrer Eltern. Kollidieren zwei Gebilde,
+            geborene Zellen erben den Farbdurchschnitt ihrer Eltern. Kollidieren zwei Gebilde,
             verschmelzen ihre Farben.
           </li>
         </ul>
 
-        <h3>Geometrie-Modi</h3>
+        <h3>Geometriemodi</h3>
         <p>
           Conways Regel hängt am <b>Quadratgitter</b> mit seinen 8 Nachbarn. Auf anderen Kachelungen
-          ändert sich die Nachbarzahl — und damit muss auch die Regel angepasst werden:
+          ändert sich die Nachbarzahl, und damit muss auch die Regel angepasst werden:
         </p>
         <ul>
           <li>
-            <b>Quadrat</b> — 8 Nachbarn, klassische Conway-Regel B3/S23.
+            <b>Quadrat</b>: 8 Nachbarn, klassische Conway Regel B3/S23.
           </li>
           <li>
-            <b>Hexagon</b> — nur 6 Nachbarn. Rein zählende (totalistische) Hex-Regeln zerfallen zu
-            Staub (Bays 2005). Daher die <i>nicht-totalistische</i> Regel <b>B2o/S2m34H</b>
+            <b>Hexagon</b>: nur 6 Nachbarn. Rein zählende (totalistische) Hexregeln zerfallen zu
+            Staub (Bays 2005). Daher die <i>nicht totalistische</i> Regel <b>B2o/S2m34H</b>{' '}
             (Callahan 1997): Es zählt nicht nur die Anzahl, sondern die <i>Anordnung</i> der
-            Nachbarn (ortho/meta/para). Sie hat echte Oszillatoren (Flipper P2/4/8), ein 2c/4-
-            Raumschiff und ist Turing-vollständig.
+            Nachbarn (ortho/meta/para). Sie hat echte Oszillatoren (Flipper P2/4/8), ein 2c/4
+            Raumschiff und ist turingvollständig.
           </li>
           <li>
-            <b>Dreieck</b> — 12 Nachbarn (Kanten + Ecken), exakt Bays' Dreiecksnachbarschaft.
-            Verwendet seine validierte Regel <b>B456/S45</b> („Life 4546", Bays 1994) — eine echte
-            Game-of-Life-Regel mit Gleitern und vielen Oszillatoren.
+            <b>Dreieck</b>: 12 Nachbarn (Kanten und Ecken), exakt Bays' Dreiecksnachbarschaft.
+            Verwendet seine validierte Regel <b>B456/S45</b> („Life 4546", Bays 1994), eine echte
+            Game of Life Regel mit Gleitern und vielen Oszillatoren.
           </li>
           <li>
-            <b>3D</b> — ein Würfelgitter mit 26 Nachbarn (Moore-Nachbarschaft). Verwendet Bays'
-            <b> „Life 5766"</b> (B67/S567, Bays 1987) — der echte 3D-Analog zu Conway, enthält
-            dessen Regel und besitzt einen 3D-Gleiter. Ansicht per Maus drehbar.
+            <b>3D</b>: ein Würfelgitter mit 26 Nachbarn (Moore Nachbarschaft). Verwendet Bays'{' '}
+            <b>„Life 5766"</b> (B67/S567, Bays 1987), den echten 3D Analog zu Conway. Enthält dessen
+            Regel und besitzt einen 3D Gleiter. Ansicht per Maus drehbar.
           </li>
         </ul>
         <p>
-          In Hex- und Dreieck-Modus setzt ein Klick echte, offline gegen die jeweilige Regel
+          In Hexagon und Dreieck setzt ein Klick echte, offline gegen die jeweilige Regel
           verifizierte Kreaturen (Flipper, Oszillatoren, Raumschiffe). Die klassischen
-          Quadrat-Figuren (Glider, Pulsar …) sind nur auf dem Quadratgitter definiert.
+          Quadratfiguren (Glider, Pulsar …) sind nur auf dem Quadratgitter definiert.
         </p>
 
         <p className="modal-foot">
-          Kurz gesagt: ein digitaler Sandkasten — eine meditative, generative Spielwiese, in der aus
+          Kurz gesagt: ein digitaler Sandkasten, eine meditative, generative Spielwiese, in der aus
           einfachen Regeln und ein paar Klicks ein farbiges, sich selbst entwickelndes Leben
           entsteht.
         </p>
