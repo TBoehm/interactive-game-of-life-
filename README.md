@@ -177,9 +177,9 @@ src/
 
 ## Autor
 
-Gebaut auf [toboehm.de](https://toboehm.de). Interesse an **Agentic Pairing** —
-gemeinsam mit KI-Agenten entwickeln wie in diesem Projekt? Mehr dazu auf
-[toboehm.de](https://toboehm.de).
+Ein Projekt von [toboehm.de](https://toboehm.de). Interesse an **Agentic
+Pairing** — gemeinsam mit KI-Agenten entwickeln wie in diesem Projekt? Mehr dazu
+auf [toboehm.de](https://toboehm.de).
 
 ## Lizenz
 
