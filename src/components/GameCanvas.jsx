@@ -127,6 +127,9 @@ export default function GameCanvas({
     }
 
     function buildGrid(seed) {
+      const prevLife = lifeRef.current
+      const prevTopo = topoRef.current
+
       const rect = canvas.parentElement.getBoundingClientRect()
       const dpr = window.devicePixelRatio || 1
       const cssW = Math.max(320, Math.floor(rect.width))
@@ -167,8 +170,29 @@ export default function GameCanvas({
       const life = new Life(topo)
       lifeRef.current = life
       fadeRef.current = createFadeState(topo.size)
+
+      // Preserve the running simulation across a resize: copy the overlapping
+      // top-left region (same cell coordinates, so row parity and triangle
+      // orientation are kept) from the previous grid into the new one.
+      if (prevLife && prevTopo && !seed) {
+        const cc = Math.min(prevTopo.cols, cols)
+        const rr = Math.min(prevTopo.rows, rows)
+        for (let y = 0; y < rr; y++) {
+          for (let x = 0; x < cc; x++) {
+            const o = y * prevTopo.cols + x
+            const n = y * cols + x
+            life.alive[n] = prevLife.alive[o]
+            life.r[n] = prevLife.r[o]
+            life.g[n] = prevLife.g[o]
+            life.b[n] = prevLife.b[o]
+          }
+        }
+        life.generation = prevLife.generation
+        life.population = life._countPopulation()
+      }
+
       if (seed) for (let i = 0; i < 3; i++) spawnRandomLocation()
-      onStats?.({ generation: 0, population: life.population })
+      onStats?.({ generation: life.generation, population: life.population })
     }
 
     buildGrid(true)

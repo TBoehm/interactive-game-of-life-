@@ -47,6 +47,21 @@ describe('GameCanvas', () => {
     await waitFor(() => expect(lastStat(onStats).population).toBe(0))
   })
 
+  it('preserves the simulation across a window resize', async () => {
+    const { onStats, rerender, props } = setup()
+    rerender(<GameCanvas {...props} randomSignal={1} />)
+    await waitFor(() => expect(lastStat(onStats).population).toBeGreaterThan(0))
+    const before = lastStat(onStats).population
+
+    window.dispatchEvent(new Event('resize'))
+
+    // resize rebuilds the grid but must copy the existing state, not wipe it
+    await waitFor(() => {
+      const last = lastStat(onStats)
+      expect(last.population).toBe(before)
+    })
+  })
+
   it('advances one generation on the step signal', async () => {
     const { onStats, rerender, props } = setup()
     await waitFor(() => expect(onStats).toHaveBeenCalled())
