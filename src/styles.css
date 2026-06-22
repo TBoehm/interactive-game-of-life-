@@ -216,6 +216,17 @@ body {
   max-width: 820px;
 }
 
+.credit a {
+  color: var(--muted);
+  text-decoration: none;
+  border-bottom: 1px dotted #3a4a72;
+  transition: color 0.15s;
+}
+
+.credit a:hover {
+  color: var(--accent);
+}
+
 /* ---- About modal ---------------------------------------------------------- */
 .modal-backdrop {
   position: fixed;

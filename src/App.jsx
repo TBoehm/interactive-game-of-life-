@@ -137,6 +137,12 @@ export default function App() {
         Nachbarn, Conway), <b>Hexagon</b> (6 Nachbarn), <b>Dreieck</b> (12 Nachbarn) und <b>3D</b>{' '}
         (26 Nachbarn, Bays Life 5766) — jede Geometrie nutzt ihre eigene, dazu passende Regel. Im
         3D-Modus drehst du die Ansicht per Maus.
+        <span className="credit">
+          {' · Agentic Pairing & mehr: '}
+          <a href="https://toboehm.de" target="_blank" rel="noopener noreferrer">
+            toboehm.de
+          </a>
+        </span>
       </footer>
 
       {showAbout && <AboutModal onClose={() => setShowAbout(false)} />}
