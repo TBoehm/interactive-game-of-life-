@@ -113,8 +113,24 @@ Systems 15 (2005)](https://wpmedia.wolfram.com/sites/13/2018/02/15-3-4.pdf) ·
 - **🗑 Leeren** – Feld zurücksetzen.
 - **🌫 Fading an/aus** – sanftes Ein-/Ausblenden der Zellen umschalten (aus =
   scharfes, sofortiges Umschalten).
+- **🔍 Muster an/aus** – im Pausemodus den Namen eines Objekts als Tooltip
+  zeigen, wenn man mit der Maus darüberfährt (nur Quadrat).
+- **📖 Katalog** – alle bekannten Muster mit Vorschau anzeigen.
 - **ℹ Über** – Kurzerklärung im Overlay.
 - **Tempo** – Generationen pro Sekunde (1–60).
+
+## Mustererkennung
+
+Im Pausemodus erkennt das Spiel benannte Objekte automatisch: Mit der Maus über
+ein Gebilde fahren zeigt seinen Namen (z. B. _Boat_, _Blinker_, _Glider_), Typ
+und Periode. Die Erkennung läuft über das _Verhalten_ (das isolierte Objekt wird
+kurz simuliert, um Periode und Drift zu bestimmen) und ist invariant gegen
+Verschiebung, Drehung, Spiegelung und Phase. Unbekannte Objekte werden generisch
+beschrieben (z. B. „Oszillator P3 (unbenannt)"). Der **Katalog** zeigt alle
+hinterlegten Muster. Aktuell nur im Quadratmodus (klassischer Conway-Namenskatalog).
+
+Implementiert in `src/lib/identify.js` (Erkennung) und `src/lib/catalog.js`
+(Datenbank, aus denselben Koordinaten abgeleitet, daher immer konsistent).
 
 ## Lokal entwickeln
 

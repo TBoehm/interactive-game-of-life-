@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { render, screen, fireEvent } from '@testing-library/react'
+import { render, screen, fireEvent, within } from '@testing-library/react'
 import App from './App'
 
 describe('App UI', () => {
@@ -60,6 +60,23 @@ describe('App UI', () => {
     expect(btn.textContent).toContain('aus') // off by default
     fireEvent.click(btn)
     expect(screen.getByRole('button', { name: /Fading/ }).textContent).toContain('an')
+  })
+
+  it('toggles the pattern recognition control', () => {
+    render(<App />)
+    const btn = screen.getByRole('button', { name: /Muster/ })
+    expect(btn.textContent).toContain('an') // on by default
+    fireEvent.click(btn)
+    expect(screen.getByRole('button', { name: /Muster/ }).textContent).toContain('aus')
+  })
+
+  it('opens the catalog with named patterns', () => {
+    render(<App />)
+    fireEvent.click(screen.getByRole('button', { name: /Katalog/ }))
+    const dialog = screen.getByRole('dialog', { name: 'Musterkatalog' })
+    expect(dialog).toBeTruthy()
+    expect(within(dialog).getByText('Glider')).toBeTruthy()
+    expect(within(dialog).getByText('Blinker')).toBeTruthy()
   })
 
   it('opens and closes the About modal', () => {

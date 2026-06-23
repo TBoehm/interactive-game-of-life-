@@ -1,9 +1,11 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Life } from '../lib/engine'
 import { randomColor } from '../lib/color'
 import { randomPattern, randomHexPattern, randomTriPattern, patternSize } from '../lib/patterns'
 import { createTopology, cellAt } from '../lib/topology'
 import { createFadeState, stepFade, easing, fadeDuration } from '../lib/fade'
+import { components, identifyObject } from '../lib/identify'
+import { describe } from '../lib/catalog'
 
 // Pixel size per cell, chosen per topology (hex/triangle look better larger).
 const CELL_PX = { square: 8, hex: 12, triangle: 16 }
@@ -17,6 +19,7 @@ export default function GameCanvas({
   running,
   speed,
   fade,
+  recognize,
   stepSignal,
   clearSignal,
   randomSignal,
@@ -31,6 +34,11 @@ export default function GameCanvas({
   const rafRef = useRef(0)
   const lastStepRef = useRef(0)
   const lastFrameRef = useRef(0)
+  // Pattern recognition: bump boardVersionRef whenever the board changes so the
+  // (lazy, paused-only) identification cache is invalidated.
+  const boardVersionRef = useRef(0)
+  const identCacheRef = useRef({ version: -1, comps: null, cellOf: null, results: null })
+  const [tip, setTip] = useState(null)
 
   const runningRef = useRef(running)
   const speedRef = useRef(speed)
@@ -248,6 +256,7 @@ export default function GameCanvas({
         if (runningRef.current && ts - lastStepRef.current >= interval) {
           life.step()
           lastStepRef.current = ts
+          boardVersionRef.current++
           onStats?.({ generation: life.generation, population: life.population })
         }
         const dt = lastFrameRef.current ? ts - lastFrameRef.current : 16
@@ -277,6 +286,7 @@ export default function GameCanvas({
     const life = lifeRef.current
     if (life) {
       life.step()
+      boardVersionRef.current++
       onStats?.({ generation: life.generation, population: life.population })
     }
   }, [stepSignal]) // eslint-disable-line react-hooks/exhaustive-deps
@@ -286,6 +296,8 @@ export default function GameCanvas({
     const life = lifeRef.current
     if (life) {
       life.clear()
+      boardVersionRef.current++
+      setTip(null)
       onStats?.({ generation: 0, population: 0 })
     }
   }, [clearSignal]) // eslint-disable-line react-hooks/exhaustive-deps
@@ -295,6 +307,7 @@ export default function GameCanvas({
     const life = lifeRef.current
     if (life) {
       for (let i = 0; i < 6; i++) spawnRandomLocation()
+      boardVersionRef.current++
       onStats?.({ generation: life.generation, population: life.population })
     }
   }, [randomSignal]) // eslint-disable-line react-hooks/exhaustive-deps
@@ -318,6 +331,7 @@ export default function GameCanvas({
       index = cellAt(topo, px, py)
     }
     const label = spawnAtCell(index)
+    boardVersionRef.current++
     onStats?.({
       generation: life.generation,
       population: life.population,
@@ -325,9 +339,56 @@ export default function GameCanvas({
     })
   }
 
+  // ---- Pause-mode pattern recognition (square only) -------------------------
+  function handleMove(e) {
+    if (running || !recognize || kind !== 'square') {
+      if (tip) setTip(null)
+      return
+    }
+    const topo = topoRef.current
+    const life = lifeRef.current
+    if (!topo || !life) return
+    const rect = canvasRef.current.getBoundingClientRect()
+    const cellPx = CELL_PX.square
+    const cx = Math.floor((((e.clientX - rect.left) / rect.width) * topo.canvasW) / cellPx)
+    const cy = Math.floor((((e.clientY - rect.top) / rect.height) * topo.canvasH) / cellPx)
+    if (cx < 0 || cx >= topo.cols || cy < 0 || cy >= topo.rows) {
+      setTip(null)
+      return
+    }
+    const cell = cy * topo.cols + cx
+    if (!life.alive[cell]) {
+      setTip(null)
+      return
+    }
+    let cache = identCacheRef.current
+    if (cache.version !== boardVersionRef.current) {
+      const { comps, cellOf } = components(life, topo)
+      cache = { version: boardVersionRef.current, comps, cellOf, results: new Array(comps.length) }
+      identCacheRef.current = cache
+    }
+    const id = cache.cellOf[cell]
+    if (id < 0) {
+      setTip(null)
+      return
+    }
+    if (!cache.results[id]) cache.results[id] = describe(identifyObject(cache.comps[id]))
+    setTip({ x: e.clientX - rect.left, y: e.clientY - rect.top, text: cache.results[id] })
+  }
+
   return (
     <div className="canvas-wrap">
-      <canvas ref={canvasRef} onClick={handleClick} />
+      <canvas
+        ref={canvasRef}
+        onClick={handleClick}
+        onMouseMove={handleMove}
+        onMouseLeave={() => setTip(null)}
+      />
+      {tip && (
+        <div className="ident-tooltip" style={{ left: tip.x + 14, top: tip.y + 14 }}>
+          {tip.text}
+        </div>
+      )}
     </div>
   )
 }

@@ -2,6 +2,7 @@ import { useState } from 'react'
 import GameCanvas from './components/GameCanvas'
 import Game3DCanvas from './components/Game3DCanvas'
 import AboutModal from './components/AboutModal'
+import CatalogModal from './components/CatalogModal'
 import { TOPOLOGIES, DEFAULT_RULES } from './lib/topology'
 
 const ruleLabel = (rule) => rule.label
@@ -15,7 +16,9 @@ export default function App() {
   const [randomSignal, setRandomSignal] = useState(0)
   const [stats, setStats] = useState({ generation: 0, population: 0, lastPattern: null })
   const [showAbout, setShowAbout] = useState(false)
+  const [showCatalog, setShowCatalog] = useState(false)
   const [fade, setFade] = useState(false)
+  const [recognize, setRecognize] = useState(true)
 
   const rule = DEFAULT_RULES[kind]
 
@@ -63,6 +66,20 @@ export default function App() {
             title="Sanftes Ein und Ausblenden der Zellen (gegen hartes Flackern)"
           >
             🌫 Fading {fade ? 'an' : 'aus'}
+          </button>
+          <button
+            className={recognize ? 'btn primary' : 'btn'}
+            onClick={() => setRecognize((r) => !r)}
+            title="Im Pausemodus über ein Objekt fahren zeigt seinen Namen (nur Quadrat)"
+          >
+            🔍 Muster {recognize ? 'an' : 'aus'}
+          </button>
+          <button
+            className="btn"
+            onClick={() => setShowCatalog(true)}
+            title="Alle bekannten Muster"
+          >
+            📖 Katalog
           </button>
           <button
             className="btn"
@@ -122,6 +139,7 @@ export default function App() {
             running={running}
             speed={speed}
             fade={fade}
+            recognize={recognize}
             stepSignal={stepSignal}
             clearSignal={clearSignal}
             randomSignal={randomSignal}
@@ -146,6 +164,7 @@ export default function App() {
       </footer>
 
       {showAbout && <AboutModal onClose={() => setShowAbout(false)} />}
+      {showCatalog && <CatalogModal onClose={() => setShowCatalog(false)} />}
     </div>
   )
 }
