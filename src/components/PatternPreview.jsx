@@ -11,12 +11,18 @@ const FPS = 7
 // projection (no WebGL, so many previews can run at once).
 export default function PatternPreview({ kind, cells, color, moves }) {
   const canvasRef = useRef(null)
+  // Depend on primitive color channels, not the object identity: the parent
+  // re-renders ~12x/s while the simulation runs and passes a fresh color object
+  // each time, which would otherwise restart this effect and clear the
+  // animation interval before it ever fires.
+  const { r: cr, g: cg, b: cb } = color
 
   useEffect(() => {
     const canvas = canvasRef.current
     const ctx = canvas.getContext('2d')
     const dpr = window.devicePixelRatio || 1
-    const colorStr = `rgb(${color.r},${color.g},${color.b})`
+    const spawnColor = { r: cr, g: cg, b: cb }
+    const colorStr = `rgb(${cr},${cg},${cb})`
     const rule = DEFAULT_RULES[kind]
 
     let maxX = 0
@@ -120,7 +126,7 @@ export default function PatternPreview({ kind, cells, color, moves }) {
 
     const spawn = () => {
       life.clear()
-      life.spawnCells(initIdx, color)
+      life.spawnCells(initIdx, spawnColor)
     }
     // Square is toroidal, so spaceships loop on their own; bounded grids
     // (hex/triangle) re-center moving patterns periodically so they keep looping.
@@ -137,7 +143,7 @@ export default function PatternPreview({ kind, cells, color, moves }) {
     }, 1000 / FPS)
 
     return () => clearInterval(id)
-  }, [kind, cells, color, moves])
+  }, [kind, cells, cr, cg, cb, moves])
 
   return <canvas ref={canvasRef} className="preview-canvas" />
 }
