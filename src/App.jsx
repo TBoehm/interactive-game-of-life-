@@ -18,7 +18,6 @@ export default function App() {
   const [showAbout, setShowAbout] = useState(false)
   const [showCatalog, setShowCatalog] = useState(false)
   const [fade, setFade] = useState(false)
-  const [recognize, setRecognize] = useState(true)
 
   const rule = DEFAULT_RULES[kind]
 
@@ -66,13 +65,6 @@ export default function App() {
             title="Sanftes Ein und Ausblenden der Zellen (gegen hartes Flackern)"
           >
             🌫 Fading {fade ? 'an' : 'aus'}
-          </button>
-          <button
-            className={recognize ? 'btn primary' : 'btn'}
-            onClick={() => setRecognize((r) => !r)}
-            title="Im Pausemodus über ein Objekt fahren zeigt seinen Namen (nur Quadrat)"
-          >
-            🔍 Muster {recognize ? 'an' : 'aus'}
           </button>
           <button
             className="btn"
@@ -139,7 +131,6 @@ export default function App() {
             running={running}
             speed={speed}
             fade={fade}
-            recognize={recognize}
             stepSignal={stepSignal}
             clearSignal={clearSignal}
             randomSignal={randomSignal}
