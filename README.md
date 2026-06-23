@@ -115,7 +115,8 @@ Systems 15 (2005)](https://wpmedia.wolfram.com/sites/13/2018/02/15-3-4.pdf) ·
   scharfes, sofortiges Umschalten).
 - **🔍 Muster an/aus** – im Pausemodus den Namen eines Objekts als Tooltip
   zeigen, wenn man mit der Maus darüberfährt (nur Quadrat).
-- **📖 Katalog** – alle bekannten Muster mit Vorschau anzeigen.
+- **📖 Katalog** – alle Muster des aktuellen Modus anzeigen; jede Vorschau läuft
+  live (Oszillatoren pulsieren, Raumschiffe fliegen), jedes Muster in eigener Farbe.
 - **ℹ Über** – Kurzerklärung im Overlay.
 - **Tempo** – Generationen pro Sekunde (1–60).
 
@@ -126,8 +127,12 @@ ein Gebilde fahren zeigt seinen Namen (z. B. _Boat_, _Blinker_, _Glider_), Typ
 und Periode. Die Erkennung läuft über das _Verhalten_ (das isolierte Objekt wird
 kurz simuliert, um Periode und Drift zu bestimmen) und ist invariant gegen
 Verschiebung, Drehung, Spiegelung und Phase. Unbekannte Objekte werden generisch
-beschrieben (z. B. „Oszillator P3 (unbenannt)"). Der **Katalog** zeigt alle
-hinterlegten Muster. Aktuell nur im Quadratmodus (klassischer Conway-Namenskatalog).
+beschrieben (z. B. „Oszillator P3 (unbenannt)"). Aktuell nur im Quadratmodus
+(klassischer Conway-Namenskatalog).
+
+Der **Katalog** passt sich dem aktuellen Modus an (Quadrat, Hexagon, Dreieck,
+3D) und animiert jede Vorschau mit der echten Engine in der passenden Regel —
+Oszillatoren pulsieren, Raumschiffe fliegen, jedes Muster in eigener Farbe.
 
 Implementiert in `src/lib/identify.js` (Erkennung) und `src/lib/catalog.js`
 (Datenbank, aus denselben Koordinaten abgeleitet, daher immer konsistent).

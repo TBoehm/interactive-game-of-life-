@@ -251,14 +251,20 @@ body {
 }
 
 .catalog-preview {
-  height: 96px;
+  height: 120px;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.preview rect {
-  fill: var(--accent);
+.preview-canvas {
+  display: block;
+  border-radius: 6px;
+  background: #0e1018;
+}
+
+.accent {
+  color: var(--accent);
 }
 
 .catalog-name {

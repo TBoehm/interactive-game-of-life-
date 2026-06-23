@@ -79,6 +79,15 @@ describe('App UI', () => {
     expect(within(dialog).getByText('Blinker')).toBeTruthy()
   })
 
+  it('adapts the catalog to the current mode', () => {
+    render(<App />)
+    fireEvent.click(screen.getByRole('button', { name: 'Hexagon' }))
+    fireEvent.click(screen.getByRole('button', { name: /Katalog/ }))
+    const dialog = screen.getByRole('dialog', { name: 'Musterkatalog' })
+    expect(within(dialog).getByText('Hexagon')).toBeTruthy()
+    expect(within(dialog).getAllByText('Flipper').length).toBeGreaterThan(0)
+  })
+
   it('opens and closes the About modal', () => {
     render(<App />)
     fireEvent.click(screen.getByRole('button', { name: /Über/ }))

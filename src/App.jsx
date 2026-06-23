@@ -164,7 +164,7 @@ export default function App() {
       </footer>
 
       {showAbout && <AboutModal onClose={() => setShowAbout(false)} />}
-      {showCatalog && <CatalogModal onClose={() => setShowCatalog(false)} />}
+      {showCatalog && <CatalogModal kind={kind} onClose={() => setShowCatalog(false)} />}
     </div>
   )
 }

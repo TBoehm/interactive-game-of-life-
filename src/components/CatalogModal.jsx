@@ -1,32 +1,52 @@
 import { CATALOG } from '../lib/catalog'
+import { HEX_PATTERNS, TRI_PATTERNS, LIFE3D_PATTERNS } from '../lib/patterns'
+import { hslToRgb } from '../lib/color'
+import { TOPOLOGIES } from '../lib/topology'
+import PatternPreview from './PatternPreview'
 
-const GROUPS = [
-  ['still', 'Stillleben'],
-  ['oscillator', 'Oszillatoren'],
-  ['spaceship', 'Raumschiffe'],
-]
-
-// Tiny SVG preview of a pattern's cells.
-function Preview({ cells }) {
-  let maxX = 0
-  let maxY = 0
-  for (const [x, y] of cells) {
-    if (x > maxX) maxX = x
-    if (y > maxY) maxY = y
+// Build a uniform { name, cells, moves, meta } list for the current mode.
+function itemsFor(kind) {
+  if (kind === 'hex') {
+    return HEX_PATTERNS.map((p) => ({
+      name: p.name,
+      cells: p.cells,
+      moves: p.category === 'Raumschiff',
+      meta: p.category,
+    }))
   }
-  const s = 7
-  const w = (maxX + 1) * s
-  const h = (maxY + 1) * s
-  return (
-    <svg width={w} height={h} viewBox={`0 0 ${w} ${h}`} className="preview">
-      {cells.map(([x, y], i) => (
-        <rect key={i} x={x * s} y={y * s} width={s - 1} height={s - 1} rx="1" />
-      ))}
-    </svg>
-  )
+  if (kind === 'triangle') {
+    return TRI_PATTERNS.map((p) => ({
+      name: p.name,
+      cells: p.cells,
+      moves: p.category === 'Raumschiff',
+      meta: p.category,
+    }))
+  }
+  if (kind === 'life3d') {
+    return LIFE3D_PATTERNS.map((p) => ({
+      name: p.name,
+      cells: p.cells,
+      moves: false,
+      meta: 'Oszillator',
+    }))
+  }
+  return CATALOG.map((e) => ({
+    name: e.name,
+    cells: e.cells,
+    moves: e.type === 'spaceship',
+    meta:
+      e.type === 'oscillator'
+        ? `Oszillator P${e.period}`
+        : e.type === 'spaceship'
+          ? 'Raumschiff'
+          : 'Stillleben',
+  }))
 }
 
-export default function CatalogModal({ onClose }) {
+export default function CatalogModal({ kind, onClose }) {
+  const items = itemsFor(kind)
+  const label = TOPOLOGIES[kind].label
+
   return (
     <div className="modal-backdrop" onClick={onClose}>
       <div
@@ -40,31 +60,29 @@ export default function CatalogModal({ onClose }) {
           ✕
         </button>
 
-        <h2>Musterkatalog</h2>
+        <h2>
+          Musterkatalog · <span className="accent">{label}</span>
+        </h2>
         <p>
-          Diese benannten Muster erkennt das Spiel im Pausemodus automatisch, wenn du mit der Maus
-          über ein Objekt fährst (nur im Quadratmodus). Erkennung erfolgt über das Verhalten,
-          unabhängig von Drehung, Spiegelung und Phase.
+          {kind === 'square'
+            ? 'Diese benannten Muster erkennt das Spiel im Pausemodus, wenn du mit der Maus über ein Objekt fährst. Jede Vorschau läuft live: Oszillatoren pulsieren, Raumschiffe fliegen.'
+            : `Muster, die im Modus ${label} per Klick erscheinen. Jede Vorschau läuft live in der zum Modus passenden Regel; jedes Muster in eigener Farbe.`}
         </p>
 
-        {GROUPS.map(([type, label]) => (
-          <section key={type} className="catalog-group">
-            <h3>{label}</h3>
-            <div className="catalog-grid">
-              {CATALOG.filter((e) => e.type === type).map((e) => (
-                <div key={e.name} className="catalog-item">
-                  <div className="catalog-preview">
-                    <Preview cells={e.cells} />
-                  </div>
-                  <div className="catalog-name">{e.name}</div>
-                  {e.type === 'oscillator' && (
-                    <div className="catalog-meta">Periode {e.period}</div>
-                  )}
+        <div className="catalog-grid">
+          {items.map((item, i) => {
+            const color = hslToRgb((i * 360) / items.length, 0.72, 0.6)
+            return (
+              <div key={`${item.name}-${i}`} className="catalog-item">
+                <div className="catalog-preview">
+                  <PatternPreview kind={kind} cells={item.cells} color={color} moves={item.moves} />
                 </div>
-              ))}
-            </div>
-          </section>
-        ))}
+                <div className="catalog-name">{item.name}</div>
+                {item.meta && <div className="catalog-meta">{item.meta}</div>}
+              </div>
+            )
+          })}
+        </div>
       </div>
     </div>
   )

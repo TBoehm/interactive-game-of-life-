@@ -11,14 +11,20 @@ afterEach(() => cleanup())
 
 class FakeContext {
   setTransform() {}
+  scale() {}
+  translate() {}
+  save() {}
+  restore() {}
   clearRect() {}
   fillRect() {}
   drawImage() {}
   putImageData() {}
   fill() {}
+  stroke() {}
   beginPath() {}
   moveTo() {}
   lineTo() {}
+  arc() {}
   closePath() {}
   createImageData(w, h) {
     return { data: new Uint8ClampedArray(w * h * 4), width: w, height: h }
