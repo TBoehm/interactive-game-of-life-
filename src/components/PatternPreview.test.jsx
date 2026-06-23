@@ -27,4 +27,29 @@ describe('PatternPreview', () => {
     expect(spy).toHaveBeenCalled()
     spy.mockRestore()
   })
+
+  it('renders the 3D preview without crashing and keeps stepping', () => {
+    vi.useFakeTimers()
+    const spy = vi.spyOn(Life.prototype, 'step')
+    // a 3D pattern (cells are [x, y, z])
+    render(
+      <PatternPreview
+        kind="life3d"
+        cells={[
+          [0, 0, 0],
+          [0, 0, 1],
+          [0, 1, 0],
+          [0, 1, 1],
+          [0, 2, 0],
+          [0, 2, 1],
+        ]}
+        color={{ r: 5, g: 5, b: 5 }}
+        moves={false}
+      />,
+    )
+    spy.mockClear()
+    vi.advanceTimersByTime(400)
+    expect(spy).toHaveBeenCalled()
+    spy.mockRestore()
+  })
 })

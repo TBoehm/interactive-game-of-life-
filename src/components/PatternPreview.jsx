@@ -62,7 +62,8 @@ export default function PatternPreview({ kind, cells, color, moves }) {
         ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
         ctx.fillStyle = '#0e1018'
         ctx.fillRect(0, 0, BOX, BOX)
-        const { alive, nx, ny } = topo
+        const { nx, ny } = topo
+        const { alive } = life
         const list = []
         for (let i = 0; i < topo.size; i++) {
           if (!alive[i]) continue
