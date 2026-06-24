@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import { Life } from './engine'
 import { createTopology, create3DTopology, DEFAULT_RULES } from './topology'
+import { LIFE3D_PATTERNS } from './patterns'
 
 // Helper: square topology with Conway rules.
 function squareLife(cols, rows) {
@@ -249,5 +250,33 @@ describe('3D Life (Bays 5766, B67/S567)', () => {
     life.step()
     expect(liveSet(life)).toEqual(g0)
     expect(life.population).toBeGreaterThan(0)
+  })
+
+  it('every catalog 3D pattern is a bounded period-2 oscillator', () => {
+    for (const p of LIFE3D_PATTERNS) {
+      let mx = 0
+      let my = 0
+      let mz = 0
+      for (const [x, y, z] of p.cells) {
+        if (x > mx) mx = x
+        if (y > my) my = y
+        if (z > mz) mz = z
+      }
+      const pad = 3
+      const N = Math.max(mx, my, mz) + 1 + pad * 2
+      const topo = create3DTopology(N, N, N, DEFAULT_RULES.life3d)
+      const life = new Life(topo)
+      const id = (x, y, z) => ((pad + z) * N + (pad + y)) * N + (pad + x)
+      life.spawnCells(
+        p.cells.map(([x, y, z]) => id(x, y, z)),
+        WHITE,
+      )
+      const g0 = liveSet(life)
+      life.step()
+      life.step()
+      expect(`${p.name}:${liveSet(life).size}`).toBe(`${p.name}:${g0.size}`)
+      expect(liveSet(life)).toEqual(g0) // returns to itself after 2 generations
+      expect(life.population).toBeGreaterThan(0)
+    }
   })
 })

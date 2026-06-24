@@ -3,6 +3,7 @@ import { HEX_PATTERNS, TRI_PATTERNS, LIFE3D_PATTERNS } from '../lib/patterns'
 import { hslToRgb } from '../lib/color'
 import { TOPOLOGIES } from '../lib/topology'
 import PatternPreview from './PatternPreview'
+import Preview3D from './Preview3D'
 
 // Build a uniform { name, cells, moves, meta } list for the current mode.
 function itemsFor(kind) {
@@ -75,7 +76,16 @@ export default function CatalogModal({ kind, onClose }) {
             return (
               <div key={`${item.name}-${i}`} className="catalog-item">
                 <div className="catalog-preview">
-                  <PatternPreview kind={kind} cells={item.cells} color={color} moves={item.moves} />
+                  {kind === 'life3d' ? (
+                    <Preview3D cells={item.cells} color={color} />
+                  ) : (
+                    <PatternPreview
+                      kind={kind}
+                      cells={item.cells}
+                      color={color}
+                      moves={item.moves}
+                    />
+                  )}
                 </div>
                 <div className="catalog-name">{item.name}</div>
                 {item.meta && <div className="catalog-meta">{item.meta}</div>}
