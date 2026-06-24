@@ -40,23 +40,39 @@ export default function PatternPreview({ kind, cells, color, moves }) {
     let topo
 
     if (kind === 'life3d') {
-      const pad = 4
+      const pad = 3
       const N = Math.max(maxX, maxY, maxZ) + 1 + pad * 2
       topo = create3DTopology(N, N, N, rule)
       const o = pad
       initIdx = cells.map(([x, y, z]) => ((o + z) * N + (o + y)) * N + (o + x))
       life = new Life(topo)
 
-      const c = (N - 1) / 2
-      const u = (BOX * 0.4) / N
+      // Center the projection on the pattern (not the padded grid) and scale by
+      // the pattern's own extent so it fills the preview box.
+      const cx = pad + maxX / 2
+      const cy = pad + maxY / 2
+      const cz = pad + maxZ / 2
+      const extent = Math.max(maxX, maxY, maxZ) + 1
+      const u = (BOX * 0.62) / (extent + 1.5)
       const proj = (x, y, z) => [
-        BOX / 2 + (x - c - (z - c)) * u * 0.87,
-        BOX / 2 + (x - c + (z - c)) * u * 0.5 - (y - c) * u,
+        BOX / 2 + (x - cx - (z - cz)) * u * 0.87,
+        BOX / 2 + (x - cx + (z - cz)) * u * 0.5 - (y - cy) * u,
       ]
       canvas.width = Math.round(BOX * dpr)
       canvas.height = Math.round(BOX * dpr)
       canvas.style.width = `${BOX}px`
       canvas.style.height = `${BOX}px`
+
+      const s = u * 0.92
+      const shade = (k) => `rgb(${(cr * k) | 0},${(cg * k) | 0},${(cb * k) | 0})`
+      const face = (pts, k) => {
+        ctx.fillStyle = shade(k)
+        ctx.beginPath()
+        ctx.moveTo(pts[0], pts[1])
+        for (let i = 2; i < pts.length; i += 2) ctx.lineTo(pts[i], pts[i + 1])
+        ctx.closePath()
+        ctx.fill()
+      }
 
       render = () => {
         ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
@@ -72,12 +88,15 @@ export default function PatternPreview({ kind, cells, color, moves }) {
           const z = (i / (nx * ny)) | 0
           list.push([x, y, z])
         }
+        // painter's order: draw far (back, lower) cells first
         list.sort((a, b) => a[0] + a[2] - a[1] - (b[0] + b[2] - b[1]))
-        const size = Math.max(3, u * 1.7)
+        const w = s * 0.87
         for (const [x, y, z] of list) {
-          const [sx, sy] = proj(x, y, z)
-          ctx.fillStyle = colorStr
-          ctx.fillRect(sx - size / 2, sy - size / 2, size, size)
+          const [px, py] = proj(x, y, z)
+          // top face (lightest), then left, then right (darkest) -> reads as a cube
+          face([px, py - s, px + w, py - s * 0.5, px, py, px - w, py - s * 0.5], 1)
+          face([px - w, py - s * 0.5, px, py, px, py + s, px - w, py + s * 0.5], 0.66)
+          face([px, py, px + w, py - s * 0.5, px + w, py + s * 0.5, px, py + s], 0.46)
         }
       }
     } else {
