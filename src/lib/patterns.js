@@ -450,12 +450,44 @@ export function randomTriPattern() {
 }
 
 // 3D patterns for Bays' rule "Life 5766" (B67/S567) on the 26-neighbor cubic
-// grid. Harvested and verified offline; these are genuinely three-dimensional
-// period-2 oscillators of differing shape and size. The 3D Moore neighborhood
-// is uniform, so unlike hex/triangle there is no parity constraint.
+// grid. Harvested and verified offline. Life 5766 is a true Game-of-Life rule,
+// so it has all the usual creature types: still lifes, oscillators and a glider
+// (spaceship). The 3D Moore neighborhood is uniform, so unlike hex/triangle
+// there is no parity constraint.
 export const LIFE3D_PATTERNS = [
   {
+    name: 'Block (Würfel)',
+    category: 'Stillleben',
+    cells: [
+      [0, 0, 0],
+      [0, 0, 1],
+      [0, 1, 0],
+      [0, 1, 1],
+      [1, 0, 0],
+      [1, 0, 1],
+      [1, 1, 0],
+      [1, 1, 1],
+    ],
+  },
+  {
+    name: 'Stillleben (3D)',
+    category: 'Stillleben',
+    cells: [
+      [0, 1, 1],
+      [1, 0, 1],
+      [1, 1, 0],
+      [1, 1, 2],
+      [1, 2, 1],
+      [1, 2, 2],
+      [2, 0, 1],
+      [2, 1, 0],
+      [2, 1, 2],
+      [2, 2, 1],
+    ],
+  },
+  {
     name: 'Oszillator (klein)',
+    category: 'Oszillator',
     cells: [
       [0, 0, 0],
       [0, 0, 1],
@@ -469,6 +501,7 @@ export const LIFE3D_PATTERNS = [
   },
   {
     name: 'Oszillator (Würfel)',
+    category: 'Oszillator',
     cells: [
       [0, 1, 0],
       [0, 1, 1],
@@ -483,6 +516,7 @@ export const LIFE3D_PATTERNS = [
   },
   {
     name: 'Oszillator (groß)',
+    category: 'Oszillator',
     cells: [
       [0, 2, 1],
       [1, 1, 0],
@@ -502,24 +536,19 @@ export const LIFE3D_PATTERNS = [
     ],
   },
   {
-    name: 'Oszillator (Käfig)',
+    name: 'Gleiter (3D)',
+    category: 'Raumschiff',
     cells: [
-      [0, 1, 1],
+      [0, 0, 0],
+      [0, 0, 2],
+      [0, 1, 0],
       [0, 1, 2],
       [1, 0, 1],
       [1, 0, 2],
-      [1, 1, 0],
-      [1, 1, 3],
-      [1, 2, 0],
-      [1, 2, 3],
-      [1, 3, 1],
-      [1, 3, 2],
+      [1, 1, 1],
+      [1, 1, 2],
+      [2, 0, 1],
       [2, 1, 1],
-      [2, 1, 2],
-      [2, 3, 1],
-      [2, 3, 2],
-      [3, 2, 1],
-      [3, 2, 2],
     ],
   },
 ]

@@ -27,8 +27,8 @@ function itemsFor(kind) {
     return LIFE3D_PATTERNS.map((p) => ({
       name: p.name,
       cells: p.cells,
-      moves: false,
-      meta: 'Oszillator',
+      moves: p.category === 'Raumschiff',
+      meta: p.category || 'Oszillator',
     }))
   }
   return CATALOG.map((e) => ({
@@ -77,7 +77,7 @@ export default function CatalogModal({ kind, onClose }) {
               <div key={`${item.name}-${i}`} className="catalog-item">
                 <div className="catalog-preview">
                   {kind === 'life3d' ? (
-                    <Preview3D cells={item.cells} color={color} />
+                    <Preview3D cells={item.cells} color={color} moves={item.moves} />
                   ) : (
                     <PatternPreview
                       kind={kind}

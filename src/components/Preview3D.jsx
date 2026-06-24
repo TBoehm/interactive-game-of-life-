@@ -10,7 +10,7 @@ const FPS = 6
 // lighting, so the pattern reads clearly as a rotating 3D object. The simulation
 // runs on the same engine; the camera gently auto-rotates. Resilient to missing
 // WebGL (e.g. jsdom in tests): it simply renders nothing in that case.
-export default function Preview3D({ cells, color }) {
+export default function Preview3D({ cells, color, moves }) {
   const mountRef = useRef(null)
   const { r: cr, g: cg, b: cb } = color
 
@@ -26,12 +26,17 @@ export default function Preview3D({ cells, color }) {
       if (y > maxY) maxY = y
       if (z > maxZ) maxZ = z
     }
-    const pad = 2
+    // moving patterns (spaceships) need room to travel before being recentered
+    const pad = moves ? 7 : 2
     const N = Math.max(maxX, maxY, maxZ) + 1 + pad * 2
     const topo = create3DTopology(N, N, N, rule)
     const initIdx = cells.map(([x, y, z]) => ((pad + z) * N + (pad + y)) * N + (pad + x))
     const life = new Life(topo)
-    life.spawnCells(initIdx, { r: cr, g: cg, b: cb })
+    const spawn = () => {
+      life.clear()
+      life.spawnCells(initIdx, { r: cr, g: cg, b: cb })
+    }
+    spawn()
 
     let renderer
     try {
@@ -45,7 +50,7 @@ export default function Preview3D({ cells, color }) {
 
     const scene = new THREE.Scene()
     const extent = Math.max(maxX, maxY, maxZ) + 1
-    const fr = extent * 0.66 + 1
+    const fr = extent * 0.66 + 1 + (moves ? 4 : 0)
     const camera = new THREE.OrthographicCamera(-fr, fr, fr, -fr, 0.1, 1000)
     camera.position.set(1, 0.82, 1).normalize().multiplyScalar(50)
     camera.lookAt(0, 0, 0)
@@ -94,9 +99,13 @@ export default function Preview3D({ cells, color }) {
     let raf = 0
     let last = 0
     let prevT = 0
+    let steps = 0
     const loop = (t) => {
       if (t - last >= 1000 / FPS) {
         life.step()
+        steps += 1
+        // recenter moving patterns so they keep looping inside the view
+        if (moves && steps % 10 === 0) spawn()
         sync()
         last = t
       }
@@ -115,7 +124,7 @@ export default function Preview3D({ cells, color }) {
       renderer.dispose()
       if (renderer.domElement.parentNode === mount) mount.removeChild(renderer.domElement)
     }
-  }, [cells, cr, cg, cb])
+  }, [cells, cr, cg, cb, moves])
 
   return <div ref={mountRef} className="preview-canvas" style={{ width: BOX, height: BOX }} />
 }

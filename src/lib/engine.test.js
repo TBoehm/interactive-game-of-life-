@@ -252,7 +252,28 @@ describe('3D Life (Bays 5766, B67/S567)', () => {
     expect(life.population).toBeGreaterThan(0)
   })
 
-  it('every catalog 3D pattern is a bounded period-2 oscillator', () => {
+  it('every catalog 3D pattern is a bounded, recurring creature', () => {
+    // Translation-normalized shape key, so spaceships (which move) also match.
+    const shapeKey = (life, N) => {
+      const cs = []
+      for (let i = 0; i < life.size; i++) {
+        if (!life.alive[i]) continue
+        cs.push([i % N, ((i / N) | 0) % N, (i / (N * N)) | 0])
+      }
+      let mnx = 1e9
+      let mny = 1e9
+      let mnz = 1e9
+      for (const [x, y, z] of cs) {
+        if (x < mnx) mnx = x
+        if (y < mny) mny = y
+        if (z < mnz) mnz = z
+      }
+      return cs
+        .map(([x, y, z]) => `${x - mnx},${y - mny},${z - mnz}`)
+        .sort()
+        .join(';')
+    }
+
     for (const p of LIFE3D_PATTERNS) {
       let mx = 0
       let my = 0
@@ -262,7 +283,7 @@ describe('3D Life (Bays 5766, B67/S567)', () => {
         if (y > my) my = y
         if (z > mz) mz = z
       }
-      const pad = 3
+      const pad = 5
       const N = Math.max(mx, my, mz) + 1 + pad * 2
       const topo = create3DTopology(N, N, N, DEFAULT_RULES.life3d)
       const life = new Life(topo)
@@ -271,12 +292,16 @@ describe('3D Life (Bays 5766, B67/S567)', () => {
         p.cells.map(([x, y, z]) => id(x, y, z)),
         WHITE,
       )
-      const g0 = liveSet(life)
-      life.step()
-      life.step()
-      expect(`${p.name}:${liveSet(life).size}`).toBe(`${p.name}:${g0.size}`)
-      expect(liveSet(life)).toEqual(g0) // returns to itself after 2 generations
-      expect(life.population).toBeGreaterThan(0)
+      const k0 = shapeKey(life, N)
+      let period = 0
+      for (let g = 1; g <= 8; g++) {
+        life.step()
+        expect(life.population).toBeGreaterThan(0) // not dying
+        expect(life.population).toBeLessThan(topo.size) // not exploding
+        if (!period && shapeKey(life, N) === k0) period = g
+      }
+      // recurs within 8 generations (still life P1, oscillator P2, glider P4)
+      expect(`${p.name}:${period > 0}`).toBe(`${p.name}:true`)
     }
   })
 })
