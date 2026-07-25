@@ -40,6 +40,11 @@ jobs:
 
   deploy:
     needs: build
+    # GitHub Pages only accepts deployments from the default branch, so on any
+    # other branch this job would be rejected by the environment before it even
+    # starts — a red run with no logs. Feature branches therefore stop after
+    # build + test, which is the part that is actually worth checking there.
+    if: github.ref_name == github.event.repository.default_branch || github.ref_name == 'main'
     runs-on: ubuntu-latest
     environment:
       name: github-pages
