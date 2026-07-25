@@ -88,3 +88,67 @@ describe('App UI', () => {
     expect(screen.queryByRole('dialog')).toBeNull()
   })
 })
+
+describe('Particle Life mode', () => {
+  // The 2D particle world renders through the canvas stub, so it can be mounted
+  // here — unlike the WebGL modes.
+  const enter = () => fireEvent.click(screen.getByRole('button', { name: 'Partikel' }))
+
+  it('switches the whole app over to Particle Life', () => {
+    const { container } = render(<App />)
+    expect(screen.getByText(/Interaktives Game of Life/)).toBeTruthy()
+    enter()
+    expect(screen.getByText(/Interaktives Particle Life/)).toBeTruthy()
+    // The law name also appears in the select, so read the stats line itself.
+    expect(container.querySelector('.stats .rule').textContent).toContain('β-Zelt')
+  })
+
+  it('offers the particle-only controls', () => {
+    render(<App />)
+    enter()
+    expect(screen.getByRole('button', { name: /Matrix würfeln|🎲 Matrix/ })).toBeTruthy()
+    expect(screen.getByRole('button', { name: /Spuren/ })).toBeTruthy()
+    expect(screen.getByRole('button', { name: /Torus/ })).toBeTruthy()
+  })
+
+  it('opens the matrix editor with one cell per type pair', () => {
+    render(<App />)
+    enter()
+    fireEvent.click(screen.getByRole('button', { name: '🎛 Matrix' }))
+    // The default preset has 6 types, plus the speed and parameter sliders.
+    const cells = screen.getAllByRole('slider').filter((el) => el.className.includes('matrix-cell'))
+    expect(cells).toHaveLength(36)
+  })
+
+  it('shows the universe catalog and loads a preset', () => {
+    const { container } = render(<App />)
+    enter()
+    fireEvent.click(screen.getByRole('button', { name: /Katalog/ }))
+    const dialog = screen.getByRole('dialog', { name: 'Universenkatalog' })
+    expect(within(dialog).getByText('Jagdkette')).toBeTruthy()
+    expect(within(dialog).getByText('Kristall')).toBeTruthy()
+
+    const card = within(dialog).getByText('Kristall').closest('.catalog-item')
+    fireEvent.click(within(card).getByRole('button', { name: 'Laden' }))
+    expect(screen.queryByRole('dialog')).toBeNull()
+    // Kristall runs on the flat law with 4 types.
+    const rule = container.querySelector('.stats .rule').textContent
+    expect(rule).toContain('Konstant')
+    expect(rule).toContain('4 Typen')
+  })
+
+  it('explains Particle Life rather than Conway in the About modal', () => {
+    render(<App />)
+    enter()
+    fireEvent.click(screen.getByRole('button', { name: /Über/ }))
+    expect(screen.getByText(/Was Particle Life ist und tut/)).toBeTruthy()
+  })
+
+  it('goes back to the Game of Life modes', () => {
+    render(<App />)
+    enter()
+    fireEvent.click(screen.getByRole('button', { name: 'Quadrat' }))
+    expect(screen.getByText('B3/S23')).toBeTruthy()
+    expect(screen.queryByRole('button', { name: /Torus/ })).toBeNull()
+  })
+})
