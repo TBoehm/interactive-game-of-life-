@@ -1,7 +1,7 @@
 # Particle Life — Rechercheakte
 
-Arbeitsdokument und Quellensammlung zum Thema **Particle Life** (auch: *Clusters*,
-*Attraction-Repulsion-Systeme*). Zusammengestellt als Vorbereitung für eine mögliche
+Arbeitsdokument und Quellensammlung zum Thema **Particle Life** (auch: _Clusters_,
+_Attraction-Repulsion-Systeme_). Zusammengestellt als Vorbereitung für eine mögliche
 Particle-Life-Erweiterung dieses Projekts.
 
 Stand: Juli 2026.
@@ -18,16 +18,16 @@ Stand: Juli 2026.
 ## 1. Was Particle Life ist
 
 Particle Life ist ein Modell künstlichen Lebens: einige tausend Partikel, jedes gehört zu
-einer von *n* **Farbklassen** (Typen). Zwischen je zwei Typen *i* und *j* ist ein
+einer von _n_ **Farbklassen** (Typen). Zwischen je zwei Typen _i_ und _j_ ist ein
 Kraftkoeffizient `A[i][j]` definiert — positiv = Anziehung, negativ = Abstoßung. Jedes
 Partikel spürt nur Nachbarn innerhalb eines Radius `rmax`. Zusätzlich gibt es immer eine
 **kurzreichweitige Abstoßung**, die Partikel daran hindert, ineinander zu kollabieren.
 
 Die entscheidende Eigenschaft: **`A` muss nicht symmetrisch sein.** `A[rot][blau]` darf
 +0.8 sein, während `A[blau][rot]` −0.3 ist. Rot jagt Blau, Blau flieht vor Rot. Diese
-Verletzung von *actio = reactio* ist der Motor des ganzen Systems — sie pumpt permanent
+Verletzung von _actio = reactio_ ist der Motor des ganzen Systems — sie pumpt permanent
 Energie hinein und verhindert, dass das System in ein Gleichgewicht fällt. (Physikalisch
-ist das exakt der Gegenstand der Forschung zu *nichtreziproken* Systemen, siehe
+ist das exakt der Gegenstand der Forschung zu _nichtreziproken_ Systemen, siehe
 [§ 9](#9-wissenschaftlicher-kontext).)
 
 Aus diesen zwei Zutaten (Matrix + Abstandsprofil) entstehen ohne jede weitere Programmierung:
@@ -36,16 +36,16 @@ Gleiter, Wirbel, ganze Ökosysteme aus konkurrierenden Strukturtypen.
 
 ### Abgrenzung zu Conway's Game of Life
 
-| | Game of Life | Particle Life |
-|---|---|---|
-| Raum | diskretes Gitter | kontinuierliche Ebene (2D/3D) |
-| Zustand | Zelle lebendig/tot | Position + Geschwindigkeit + Typ |
-| Regel | Nachbarschaftszählung | Kraftgesetz `F(r)` × Matrixeintrag |
-| Zeit | synchrone Generationen | numerische Integration mit `dt` |
-| Parameterraum | 1 Regel (B3/S23) | `n²` Matrixeinträge + ~5 globale Parameter |
-| Emergenz | Gleiter, Oszillatoren, Guns | Zellen, Würmer, Jagdketten, Ökosysteme |
+|               | Game of Life                | Particle Life                              |
+| ------------- | --------------------------- | ------------------------------------------ |
+| Raum          | diskretes Gitter            | kontinuierliche Ebene (2D/3D)              |
+| Zustand       | Zelle lebendig/tot          | Position + Geschwindigkeit + Typ           |
+| Regel         | Nachbarschaftszählung       | Kraftgesetz `F(r)` × Matrixeintrag         |
+| Zeit          | synchrone Generationen      | numerische Integration mit `dt`            |
+| Parameterraum | 1 Regel (B3/S23)            | `n²` Matrixeinträge + ~5 globale Parameter |
+| Emergenz      | Gleiter, Oszillatoren, Guns | Zellen, Würmer, Jagdketten, Ökosysteme     |
 
-Für dieses Repo relevant: Der Reiz ist derselbe (*Emergenz aus Minimalregeln*), aber der
+Für dieses Repo relevant: Der Reiz ist derselbe (_Emergenz aus Minimalregeln_), aber der
 Parameterraum ist ungleich größer und **kontinuierlich** — das macht ihn interaktiv
 erforschbar (Slider, Matrix-Editor) statt nur „Muster setzen".
 
@@ -68,9 +68,9 @@ Jeffrey Ventrella, "Clusters" (ca. 2000er, WebGL/Java, später LeapMotion-VR)
 ```
 
 Parallel, aber **eigenständige Modellfamilien** (nicht Particle Life im engeren Sinn,
-für Vergleich und Ideenklau aber wichtig): Reynolds' *Boids* (1987), das *Vicsek*-Modell
-(1995), Schmickls *Primordial Particle System* (2016), Bert Chans *Lenia* (2018) und
-*Particle Lenia* (2022).
+für Vergleich und Ideenklau aber wichtig): Reynolds' _Boids_ (1987), das _Vicsek_-Modell
+(1995), Schmickls _Primordial Particle System_ (2016), Bert Chans _Lenia_ (2018) und
+_Particle Lenia_ (2022).
 
 ---
 
@@ -118,18 +118,18 @@ erzwungen negativ** (`A[i][i] = -|x|`), Selbst-Abstoßung ist also Standard, und
 **Presets** (✅ direkt aus `Main.cpp`, Reihenfolge:
 `attract_mean, attract_std, minr_lower, minr_upper, maxr_lower, maxr_upper, friction, flat_force`):
 
-| Taste | Name | Typen | Partikel | Parameter |
-|---|---|---|---|---|
-| B | Balanced | 9 | 400 | `-0.02, 0.06, 0.0, 20.0, 20.0, 70.0, 0.05, false` |
-| C | Chaos | 6 | 400 | `0.02, 0.04, 0.0, 30.0, 30.0, 100.0, 0.01, false` |
-| D | Diversity | 12 | 400 | `-0.01, 0.04, 0.0, 20.0, 10.0, 60.0, 0.05, true` |
-| F | Frictionless | 6 | 300 | `0.01, 0.005, 10.0, 10.0, 10.0, 60.0, 0.0, true` |
-| G | Gliders | 6 | 400 | `0.0, 0.06, 0.0, 20.0, 10.0, 50.0, 0.1, true` |
-| H | Homogeneity | 4 | 400 | `0.0, 0.04, 10.0, 10.0, 10.0, 80.0, 0.05, true` |
-| L | Large Clusters | 6 | 400 | `0.025, 0.02, 0.0, 30.0, 30.0, 100.0, 0.2, false` |
-| M | Medium Clusters | 6 | 400 | `0.02, 0.05, 0.0, 20.0, 20.0, 50.0, 0.05, false` |
-| Q | Quiescence | 6 | 300 | `-0.02, 0.1, 10.0, 20.0, 20.0, 60.0, 0.2, false` |
-| S | Small Clusters | 6 | 600 | `-0.005, 0.01, 10.0, 10.0, 20.0, 50.0, 0.01, false` |
+| Taste | Name            | Typen | Partikel | Parameter                                           |
+| ----- | --------------- | ----- | -------- | --------------------------------------------------- |
+| B     | Balanced        | 9     | 400      | `-0.02, 0.06, 0.0, 20.0, 20.0, 70.0, 0.05, false`   |
+| C     | Chaos           | 6     | 400      | `0.02, 0.04, 0.0, 30.0, 30.0, 100.0, 0.01, false`   |
+| D     | Diversity       | 12    | 400      | `-0.01, 0.04, 0.0, 20.0, 10.0, 60.0, 0.05, true`    |
+| F     | Frictionless    | 6     | 300      | `0.01, 0.005, 10.0, 10.0, 10.0, 60.0, 0.0, true`    |
+| G     | Gliders         | 6     | 400      | `0.0, 0.06, 0.0, 20.0, 10.0, 50.0, 0.1, true`       |
+| H     | Homogeneity     | 4     | 400      | `0.0, 0.04, 10.0, 10.0, 10.0, 80.0, 0.05, true`     |
+| L     | Large Clusters  | 6     | 400      | `0.025, 0.02, 0.0, 30.0, 30.0, 100.0, 0.2, false`   |
+| M     | Medium Clusters | 6     | 400      | `0.02, 0.05, 0.0, 20.0, 20.0, 50.0, 0.05, false`    |
+| Q     | Quiescence      | 6     | 300      | `-0.02, 0.1, 10.0, 20.0, 20.0, 60.0, 0.2, false`    |
+| S     | Small Clusters  | 6     | 600      | `-0.005, 0.01, 10.0, 10.0, 20.0, 50.0, 0.01, false` |
 
 Ablesbare Faustregeln aus dieser Tabelle:
 
@@ -205,15 +205,18 @@ der Framerate.
 Radikal simpel, kein Nahabstoßungsterm, Kraft ~ 1/d:
 
 ```js
-const g = rulesArray[idx + b.type];              // Matrixeintrag, ∈ [−1, 1]
-const dx = a.x - b.x, dy = a.y - b.y;
-const d  = dx*dx + dy*dy;                        // quadriert!
-if (d > 0 && d < r2) {                           // r = 80 px
-    const F = g / Math.sqrt(d);                  // ∝ 1/d
-    fx += F * dx;  fy += F * dy;                 // Achtung: dx zeigt von b nach a
+const g = rulesArray[idx + b.type] // Matrixeintrag, ∈ [−1, 1]
+const dx = a.x - b.x,
+  dy = a.y - b.y
+const d = dx * dx + dy * dy // quadriert!
+if (d > 0 && d < r2) {
+  // r = 80 px
+  const F = g / Math.sqrt(d) // ∝ 1/d
+  fx += F * dx
+  fy += F * dy // Achtung: dx zeigt von b nach a
 }
 // Geschwindigkeitsupdate mit Viskosität statt Reibung:
-a.vx = a.vx * (1 - viscosity) + fx * time_scale;
+a.vx = a.vx * (1 - viscosity) + fx * time_scale
 ```
 
 Weil die Nahabstoßung fehlt, hält nur die 1/d-Singularität in Kombination mit negativen
@@ -228,15 +231,15 @@ wie sehr Asymmetrie das Leben macht.
 
 ### 3.4 Vergleich
 
-| | A (CodeParade) | B (Mohr) | C (Hunar) |
-|---|---|---|---|
-| Parameter pro Paar | 3 (`A`, `minR`, `maxR`) | 1 (`A`) | 1 (`A`) |
-| Globale Formparameter | `R_SMOOTH` | `β`, `rmax` | `r`, `viscosity` |
-| Nahabstoßung | glatt, `1/(r+R_SMOOTH)` | linear `r/β − 1` | keine |
-| Kraftprofil | Dreieck über `[minR,maxR]` | Zelt über `[β,1]` | `1/d` |
-| Reichweite | pro Paar verschieden | global `rmax` | global `r` |
-| Parameterraum | groß, schwer zu treffen | klein, gutmütig | winzig |
-| **Empfehlung** | für Preset-Vielfalt | **Default für Neuimplementierung** | für Minimal-Demo |
+|                       | A (CodeParade)             | B (Mohr)                           | C (Hunar)        |
+| --------------------- | -------------------------- | ---------------------------------- | ---------------- |
+| Parameter pro Paar    | 3 (`A`, `minR`, `maxR`)    | 1 (`A`)                            | 1 (`A`)          |
+| Globale Formparameter | `R_SMOOTH`                 | `β`, `rmax`                        | `r`, `viscosity` |
+| Nahabstoßung          | glatt, `1/(r+R_SMOOTH)`    | linear `r/β − 1`                   | keine            |
+| Kraftprofil           | Dreieck über `[minR,maxR]` | Zelt über `[β,1]`                  | `1/d`            |
+| Reichweite            | pro Paar verschieden       | global `rmax`                      | global `r`       |
+| Parameterraum         | groß, schwer zu treffen    | klein, gutmütig                    | winzig           |
+| **Empfehlung**        | für Preset-Vielfalt        | **Default für Neuimplementierung** | für Minimal-Demo |
 
 ---
 
@@ -244,8 +247,8 @@ wie sehr Asymmetrie das Leben macht.
 
 ### 4.1 Primordial Particle System (PPS)
 
-📄 Schmickl, Stefanec, Crailsheim, *„How a life-like system emerges from a simplistic
-particle motion law"*, **Scientific Reports 6, 37969 (2016)**,
+📄 Schmickl, Stefanec, Crailsheim, _„How a life-like system emerges from a simplistic
+particle motion law"_, **Scientific Reports 6, 37969 (2016)**,
 <https://www.nature.com/articles/srep37969> (+ Corrigendum, PMC5318889;
 3D-Fortsetzung: [arXiv:1901.09293](https://arxiv.org/abs/1901.09293);
 Projektseite: <https://alife.uni-graz.at/projects/primordial-particle-systems/>).
@@ -258,12 +261,12 @@ Zellstrukturen** und als Beleg, dass ein einzelner Bewegungs-, nicht Kraftterm r
 
 ### 4.2 Lenia / Particle Lenia
 
-- 📄 Bert Wang-Chak Chan, *Lenia — Biology of Artificial Life*,
+- 📄 Bert Wang-Chak Chan, _Lenia — Biology of Artificial Life_,
   [arXiv:1812.05433](https://arxiv.org/abs/1812.05433) (Langfassung im Complex Systems
   Journal, <https://content.wolfram.com/sites/13/2019/10/28-3-1.pdf>). Kontinuierliche
   Verallgemeinerung des Game of Life; enthält eine **Taxonomie** der gefundenen
   Lebensformen — genau die Art Katalog, die dieses Repo für GoL schon hat.
-- 📄 Mordvintsev, Niklasson, Randazzo, *Particle Lenia and the energy-based formulation*
+- 📄 Mordvintsev, Niklasson, Randazzo, _Particle Lenia and the energy-based formulation_
   (Google Research, 2022),
   <https://google-research.github.io/self-organising-systems/particle-lenia/>
   (Tutorial-Notebook: <https://observablehq.com/@znah/particle-lenia-from-scratch>).
@@ -275,8 +278,8 @@ Zellstrukturen** und als Beleg, dass ein einzelner Bewegungs-, nicht Kraftterm r
 
 📄 Reynolds (1987) — Separation/Alignment/Cohesion; Vicsek et al. (1995) — Ausrichtung an
 mittlerer Nachbarrichtung + Rauschen, zeigt einen echten **Flocking-Phasenübergang**
-(diskontinuierlich, fluktuationsgetrieben). Reviews: Vicsek & Zafeiris, *Collective motion*,
-[arXiv:1010.5017](https://arxiv.org/abs/1010.5017); *Computational models for active matter*,
+(diskontinuierlich, fluktuationsgetrieben). Reviews: Vicsek & Zafeiris, _Collective motion_,
+[arXiv:1010.5017](https://arxiv.org/abs/1010.5017); _Computational models for active matter_,
 [arXiv:1910.02528](https://arxiv.org/abs/1910.02528).
 Nutzen für uns: Particle Life kennt **kein** Alignment-Term. Ein optionaler Alignment-Slider
 wäre eine originelle Erweiterung (Particle Life × Boids) und ist in der Literatur gut
@@ -299,14 +302,14 @@ abgesichert.
    `if (dx > w/2) dx -= w; else if (dx < -w/2) dx += w;`.
    Ohne Wrap sammeln sich Strukturen in Ecken — lisyarus beschreibt genau das als
    „corner black hole"-Bug, den er später fixen musste. 📄
-5. **Reihenfolgeabhängigkeit.** Geschwindigkeiten erst *nach* der vollständigen Kraftschleife
+5. **Reihenfolgeabhängigkeit.** Geschwindigkeiten erst _nach_ der vollständigen Kraftschleife
    auf die Positionen anwenden (zwei getrennte Schleifen), sonst ist der Schritt
    Gauß-Seidel-artig und richtungsabhängig.
 6. **Diagonale der Matrix.** `A[i][i] < 0` (Selbstabstoßung) ist bei CodeParade fest
    verdrahtet und ein guter Default; `A[i][i] > 0` erzeugt schnell tote Klumpen.
-7. **Skaleninvarianz beachten.** `rmax` relativ zur Weltgröße *und* zur Partikeldichte
+7. **Skaleninvarianz beachten.** `rmax` relativ zur Weltgröße _und_ zur Partikeldichte
    wählen. Faustregel Mohr: `rmax` ≈ 1 % der Weltbreite bei einigen tausend Partikeln.
-   Zu großes `rmax` → alles wird ein Brei *und* die Nachbarschaftssuche degeneriert zu O(N²).
+   Zu großes `rmax` → alles wird ein Brei _und_ die Nachbarschaftssuche degeneriert zu O(N²).
 
 ---
 
@@ -348,7 +351,7 @@ tun (Zellzähler → Präfixsumme → Bucket-Sort der Partikelindizes). 📄
 
 ### 6.3 GPU / WebGPU
 
-📄 lisyarus, *Particle Life simulation in browser using WebGPU* (15.05.2025),
+📄 lisyarus, _Particle Life simulation in browser using WebGPU_ (15.05.2025),
 <https://lisyarus.github.io/blog/posts/particle-life-simulation-in-browser-using-webgpu.html>,
 Demo: <https://lisyarus.github.io/webgpu/particle-life.html> — 65 536 Partikel, 8 Typen,
 Binning im Compute Shader, Ping-Pong-Buffer, Optionen für Reibung, Zentralkraft,
@@ -362,16 +365,16 @@ Weitere: [paulrobello/par-particle-life](https://github.com/paulrobello/par-part
 
 Zusammengetragen aus Presets, Blogposts und Demo-Beschreibungen (teils 📄):
 
-| Gewünschtes Phänomen | Einstellung |
-|---|---|
-| **Zellen mit Membran** | 3–6 Typen; ein Typ stark selbstanziehend als „Kern", ein zweiter vom Kern angezogen, aber untereinander abstoßend als „Membran" |
-| **Würmer / Schlangen** | zyklische Matrix: `A[i][i+1] > 0`, `A[i+1][i] < 0` (Jagdkette entlang eines Rings) |
-| **Jäger/Beute, „chasers"** | stark asymmetrische Paare, mittlere Reibung |
-| **Gleiter** | kleine `maxR`, `flat_force`, hohe Reibung (siehe Preset G) |
-| **Große, träge Klumpen** | positiver `attract_mean`, große Radien, Reibung ≥ 0.2 |
-| **Chaos / Ströme** | Reibung ≈ 0.01, große `maxR`, positiver Mittelwert |
-| **Kristalle / Gitter** | fast symmetrische Matrix, wenig Rauschen, niedrige Temperatur |
-| **Tot / eingefroren** | zu hohe Reibung, oder `A[i][i] > 0` überall |
+| Gewünschtes Phänomen       | Einstellung                                                                                                                     |
+| -------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| **Zellen mit Membran**     | 3–6 Typen; ein Typ stark selbstanziehend als „Kern", ein zweiter vom Kern angezogen, aber untereinander abstoßend als „Membran" |
+| **Würmer / Schlangen**     | zyklische Matrix: `A[i][i+1] > 0`, `A[i+1][i] < 0` (Jagdkette entlang eines Rings)                                              |
+| **Jäger/Beute, „chasers"** | stark asymmetrische Paare, mittlere Reibung                                                                                     |
+| **Gleiter**                | kleine `maxR`, `flat_force`, hohe Reibung (siehe Preset G)                                                                      |
+| **Große, träge Klumpen**   | positiver `attract_mean`, große Radien, Reibung ≥ 0.2                                                                           |
+| **Chaos / Ströme**         | Reibung ≈ 0.01, große `maxR`, positiver Mittelwert                                                                              |
+| **Kristalle / Gitter**     | fast symmetrische Matrix, wenig Rauschen, niedrige Temperatur                                                                   |
+| **Tot / eingefroren**      | zu hohe Reibung, oder `A[i][i] > 0` überall                                                                                     |
 
 **Matrix-Generatoren**, die sich als UI-Presets lohnen:
 `random` (uniform in [−1,1]), `symmetric` (siehe Hunars `symmetricRules()`),
@@ -382,31 +385,31 @@ Zusammengetragen aus Presets, Blogposts und Demo-Beschreibungen (teils 📄):
 **Seeds**: Hunars Implementierung nutzt `mulberry32` mit Seed in der URL —
 reproduzierbare, teilbare Universen. Für ein Web-Projekt sehr empfehlenswert.
 
-**Automatisierte Suche**: 📄 SakanaAI/MIT/OpenAI/IDSIA, *Automating the Search for
-Artificial Life with Foundation Models* (ASAL),
+**Automatisierte Suche**: 📄 SakanaAI/MIT/OpenAI/IDSIA, _Automating the Search for
+Artificial Life with Foundation Models_ (ASAL),
 [arXiv:2412.17799](https://arxiv.org/abs/2412.17799),
 <https://sakana.ai/asal/>, Code: <https://github.com/SakanaAI/asal>. Sucht mit
 Vision-Language-Modellen nach interessanten Simulationen — **explizit auch über den
 Particle-Life-Parameterraum** (neben Boids, Lenia, GoL, NCA). Erschienen auch in
-*Artificial Life* (MIT Press) 31(3), 368.
+_Artificial Life_ (MIT Press) 31(3), 368.
 
 ---
 
 ## 8. Referenzimplementierungen (mit Lizenzstatus)
 
-| Projekt | Sprache | Lizenz | Bemerkung |
-|---|---|---|---|
-| [HackerPoet/Particle-Life](https://github.com/HackerPoet/Particle-Life) | C++/SFML | **MIT** ✅ | CodeParade-Original, Presets, `minR`/`maxR`-Modell |
-| [hunar4321/particle-life](https://github.com/hunar4321/particle-life) | JS + C++/openFrameworks | **MIT** ✅ | kürzeste lesbare Fassung, viele Community-Ports |
-| [tom-mohr/particle-life-app](https://github.com/tom-mohr/particle-life-app) | Java/LWJGL/ImGui | **GPL-3.0** ✅ | reichste App; **Code nicht kopieren**, Modell frei nachbauen |
-| [tom-mohr/particle-life](https://github.com/tom-mohr/particle-life) | Java | (Repo archiviert, Entwicklung in der App) | saubere Physik-/Grid-Referenz |
-| [lisyarus WebGPU-Demo](https://lisyarus.github.io/webgpu/particle-life.html) | WGSL/JS | — 📄 | schnellste Browser-Fassung |
-| [paulrobello/par-particle-life](https://github.com/paulrobello/par-particle-life) | Rust/wgpu | — 📄 | GPU-Referenz |
-| [Ventrella/Clusters](https://github.com/Ventrella/Clusters) | JS | — 📄 | Original von Ventrella (Repo-Struktur nicht verifiziert) |
-| [SakanaAI/asal](https://github.com/SakanaAI/asal) | Python/JAX | — 📄 | Suche im Parameterraum |
+| Projekt                                                                           | Sprache                 | Lizenz                                    | Bemerkung                                                    |
+| --------------------------------------------------------------------------------- | ----------------------- | ----------------------------------------- | ------------------------------------------------------------ |
+| [HackerPoet/Particle-Life](https://github.com/HackerPoet/Particle-Life)           | C++/SFML                | **MIT** ✅                                | CodeParade-Original, Presets, `minR`/`maxR`-Modell           |
+| [hunar4321/particle-life](https://github.com/hunar4321/particle-life)             | JS + C++/openFrameworks | **MIT** ✅                                | kürzeste lesbare Fassung, viele Community-Ports              |
+| [tom-mohr/particle-life-app](https://github.com/tom-mohr/particle-life-app)       | Java/LWJGL/ImGui        | **GPL-3.0** ✅                            | reichste App; **Code nicht kopieren**, Modell frei nachbauen |
+| [tom-mohr/particle-life](https://github.com/tom-mohr/particle-life)               | Java                    | (Repo archiviert, Entwicklung in der App) | saubere Physik-/Grid-Referenz                                |
+| [lisyarus WebGPU-Demo](https://lisyarus.github.io/webgpu/particle-life.html)      | WGSL/JS                 | — 📄                                      | schnellste Browser-Fassung                                   |
+| [paulrobello/par-particle-life](https://github.com/paulrobello/par-particle-life) | Rust/wgpu               | — 📄                                      | GPU-Referenz                                                 |
+| [Ventrella/Clusters](https://github.com/Ventrella/Clusters)                       | JS                      | — 📄                                      | Original von Ventrella (Repo-Struktur nicht verifiziert)     |
+| [SakanaAI/asal](https://github.com/SakanaAI/asal)                                 | Python/JAX              | — 📄                                      | Suche im Parameterraum                                       |
 
 ⚠️ **Lizenzhinweis für dieses Repo (MIT):** Aus GPL-3.0-Quellen (Tom Mohrs App) darf
-**kein Code** übernommen werden. Die *Modellgleichungen* sind nicht schützbar und dürfen
+**kein Code** übernommen werden. Die _Modellgleichungen_ sind nicht schützbar und dürfen
 unabhängig implementiert werden; die β-Formel aus § 3.2 ist inzwischen Community-Standard
 und auch anderswo dokumentiert.
 
@@ -418,24 +421,24 @@ Der Punkt, der Particle Life aus der Bastel- in die Forschungsecke hebt: die **a
 Matrix ist eine nichtreziproke Wechselwirkung**, und das ist ein aktives Feld der
 Physik weicher Materie.
 
-- 📄 **Fruchart, Hanai, Littlewood, Vitelli**, *Non-reciprocal phase transitions*,
+- 📄 **Fruchart, Hanai, Littlewood, Vitelli**, _Non-reciprocal phase transitions_,
   **Nature 592, 363–369 (2021)**, doi:10.1038/s41586-021-03375-9. Zeigt: Nichtreziprozität
   erzeugt zeitabhängige Phasen, in denen spontan gebrochene kontinuierliche Symmetrien
-  dynamisch wiederhergestellt werden; die Übergänge werden von *exceptional points*
+  dynamisch wiederhergestellt werden; die Übergänge werden von _exceptional points_
   kontrolliert. Genau das sind die „Jagdzustände" (chasing states) und Wanderwellen, die man
   in Particle Life sieht. → Bester wissenschaftlicher Aufhänger für einen Erklärtext.
-- 📄 *Non-reciprocal interaction for living matter*, Nature Nanotechnology (2022),
+- 📄 _Non-reciprocal interaction for living matter_, Nature Nanotechnology (2022),
   doi:10.1038/s41565-022-01268-0.
-- 📄 Übersicht Active Matter: *The 2024 Motile Active Matter Roadmap*,
+- 📄 Übersicht Active Matter: _The 2024 Motile Active Matter Roadmap_,
   [arXiv:2411.19783](https://arxiv.org/abs/2411.19783).
-- 📄 *Emergence in Artificial Life*, **Artificial Life 29(2), 153 (MIT Press)**,
+- 📄 _Emergence in Artificial Life_, **Artificial Life 29(2), 153 (MIT Press)**,
   Preprint [arXiv:2105.03216](https://arxiv.org/abs/2105.03216) — Begriffsklärung
   „Emergenz", nützlich für den Erklärtext (der GoL-README dieses Repos argumentiert bereits
   so).
 - 📄 Neuere Arbeiten, die Particle Life direkt aufgreifen:
-  *Neural Particle Automata: Learning Self-Organizing Particle Dynamics*
+  _Neural Particle Automata: Learning Self-Organizing Particle Dynamics_
   ([arXiv:2601.16096](https://arxiv.org/abs/2601.16096)),
-  *Microcosmos: Reimagining Artificial Life for the GPU Era*
+  _Microcosmos: Reimagining Artificial Life for the GPU Era_
   ([arXiv:2607.02954](https://arxiv.org/abs/2607.02954)).
 
 ---
@@ -466,7 +469,7 @@ Konkrete Empfehlungen:
 2. **Physik framerate-unabhängig**: festes `dt`, Reibung als `friction^(60·dt)`.
 3. **Kein SharedArrayBuffer** einplanen (GitHub Pages liefert die nötigen COOP/COEP-Header
    nicht). Erst Gitter + `Float32Array` ausreizen; das reicht für ~10 000 Partikel.
-4. **Farb-Metapher weiterführen**: das GoL-Projekt vererbt Farben. Particle-Life-Typen *sind*
+4. **Farb-Metapher weiterführen**: das GoL-Projekt vererbt Farben. Particle-Life-Typen _sind_
    Farben — inhaltlich anschlussfähig, `src/lib/color.js` ggf. wiederverwendbar.
 5. **Interaktion analog zum GoL-Klick**: Mausklick als radialer Impuls (Hunars `pulse`),
    nicht als Partikel-Spawn — passt zum „Anstupsen statt Bauen"-Gefühl.
@@ -480,7 +483,7 @@ Konkrete Empfehlungen:
 ## 11. Offene Fragen für die nächste Runde
 
 - Ventrellas Original-Clusters-Regeln im Detail (vier Parameter pro Gruppenpaar:
-  Attraktions-*range*/-*strength*, Repulsions-*range*/-*strength*) — bisher nur 📄 belegt,
+  Attraktions-_range_/-_strength_, Repulsions-_range_/-_strength_) — bisher nur 📄 belegt,
   Originalseite war nicht abrufbar.
 - ciphrds „Clusters X"-Artikel enthält laut Suchtreffer eine ausführliche Herleitung inkl.
   Optimierungen — ebenfalls nur 📄.
@@ -522,55 +525,55 @@ WebSearch-Zusammenfassungen nutzen und als 📄 markieren.
 
 4. lisyarus — <https://lisyarus.github.io/blog/posts/particle-life-simulation-in-browser-using-webgpu.html> ·
    Demo <https://lisyarus.github.io/webgpu/particle-life.html>
-5. Jeffrey Ventrella, *Clusters* — <https://www.ventrella.com/Clusters/> ·
+5. Jeffrey Ventrella, _Clusters_ — <https://www.ventrella.com/Clusters/> ·
    <https://github.com/Ventrella/Clusters> ·
    Vortrag <https://archive.org/details/ventrella-clusters> ·
    <https://archive.org/details/clusters-2025>
-6. ciphrd, *Clusters X* — <https://ciphrd.com/2020/02/25/clusters-x/>
-7. Softology, *Clusters and Particle Life* —
+6. ciphrd, _Clusters X_ — <https://ciphrd.com/2020/02/25/clusters-x/>
+7. Softology, _Clusters and Particle Life_ —
    <https://softologyblog.wordpress.com/2018/11/08/clusters-and-particle-life/>
-8. Physion, *Introducing Particle Life* — <https://physion.net/blog/introducing-particle-life>
+8. Physion, _Introducing Particle Life_ — <https://physion.net/blog/introducing-particle-life>
 9. par-particle-life (Rust/wgpu) — <https://github.com/paulrobello/par-particle-life>
 10. BionicHaos Sandbox — <https://bionichaos.com/ParticleLifeSim/>
 
 **Wissenschaftliche Literatur** 📄
 
-11. Schmickl, Stefanec, Crailsheim, *How a life-like system emerges from a simplistic
-    particle motion law*, Sci Rep 6:37969 (2016) —
+11. Schmickl, Stefanec, Crailsheim, _How a life-like system emerges from a simplistic
+    particle motion law_, Sci Rep 6:37969 (2016) —
     <https://www.nature.com/articles/srep37969> ·
     Corrigendum <https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5318889/> ·
     3D: <https://arxiv.org/abs/1901.09293> ·
     Projekt: <https://alife.uni-graz.at/projects/primordial-particle-systems/>
-12. Fruchart, Hanai, Littlewood, Vitelli, *Non-reciprocal phase transitions*,
+12. Fruchart, Hanai, Littlewood, Vitelli, _Non-reciprocal phase transitions_,
     Nature 592:363 (2021), doi:10.1038/s41586-021-03375-9 ·
     Kontext: <https://news.uchicago.edu/story/physicists-reveal-how-motion-can-be-generated-frustration>
-13. *Non-reciprocal interaction for living matter*, Nat. Nanotech. (2022),
+13. _Non-reciprocal interaction for living matter_, Nat. Nanotech. (2022),
     doi:10.1038/s41565-022-01268-0 · <https://pubmed.ncbi.nlm.nih.gov/36509926/>
-14. Chan, *Lenia — Biology of Artificial Life* —
+14. Chan, _Lenia — Biology of Artificial Life_ —
     <https://arxiv.org/abs/1812.05433> ·
     <https://content.wolfram.com/sites/13/2019/10/28-3-1.pdf>
-15. Mordvintsev, Niklasson, Randazzo, *Particle Lenia and the energy-based formulation* —
+15. Mordvintsev, Niklasson, Randazzo, _Particle Lenia and the energy-based formulation_ —
     <https://google-research.github.io/self-organising-systems/particle-lenia/> ·
     <https://observablehq.com/@znah/particle-lenia-from-scratch>
-16. Kumar et al. (Sakana AI/MIT/OpenAI/IDSIA), *Automating the Search for Artificial Life
-    with Foundation Models* — <https://arxiv.org/abs/2412.17799> ·
+16. Kumar et al. (Sakana AI/MIT/OpenAI/IDSIA), _Automating the Search for Artificial Life
+    with Foundation Models_ — <https://arxiv.org/abs/2412.17799> ·
     <https://sakana.ai/asal/> · <https://github.com/SakanaAI/asal> ·
     Artificial Life 31(3):368 (MIT Press)
-17. *Emergence in Artificial Life*, Artificial Life 29(2):153 —
+17. _Emergence in Artificial Life_, Artificial Life 29(2):153 —
     <https://arxiv.org/abs/2105.03216>
-18. Vicsek & Zafeiris, *Collective motion* — <https://arxiv.org/abs/1010.5017>
-19. *Computational models for active matter* — <https://arxiv.org/abs/1910.02528>
-20. *The 2024 Motile Active Matter Roadmap* — <https://arxiv.org/abs/2411.19783>
-21. *Neural Particle Automata* — <https://arxiv.org/abs/2601.16096>
-22. *Microcosmos: Reimagining Artificial Life for the GPU Era* —
+18. Vicsek & Zafeiris, _Collective motion_ — <https://arxiv.org/abs/1010.5017>
+19. _Computational models for active matter_ — <https://arxiv.org/abs/1910.02528>
+20. _The 2024 Motile Active Matter Roadmap_ — <https://arxiv.org/abs/2411.19783>
+21. _Neural Particle Automata_ — <https://arxiv.org/abs/2601.16096>
+22. _Microcosmos: Reimagining Artificial Life for the GPU Era_ —
     <https://arxiv.org/abs/2607.02954>
 
 **Performance / Technik** 📄
 
-23. dgerrells, *How fast is javascript? Simulating 20 000 000 particles* —
+23. dgerrells, _How fast is javascript? Simulating 20 000 000 particles_ —
     <https://dgerrells.com/blog/how-fast-is-javascript-simulating-20-000-000-particles>
-24. WebGL Fundamentals, *Efficient particle system in JavaScript* —
+24. WebGL Fundamentals, _Efficient particle system in JavaScript_ —
     <https://webglfundamentals.org/webgl/lessons/webgl-qna-efficient-particle-system-in-javascript---webgl-.html>
-25. *GPU-Based Neighbor-Search Algorithm for Particle Simulations* (ResearchGate) ·
-    *GPU-Native Compressed Neighbor Lists with a Space-Filling-Curve Data Layout* —
+25. _GPU-Based Neighbor-Search Algorithm for Particle Simulations_ (ResearchGate) ·
+    _GPU-Native Compressed Neighbor Lists with a Space-Filling-Curve Data Layout_ —
     <https://arxiv.org/abs/2602.19873>
