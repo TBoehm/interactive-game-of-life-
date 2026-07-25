@@ -2,8 +2,11 @@ import { CATALOG } from '../lib/catalog'
 import { HEX_PATTERNS, TRI_PATTERNS, LIFE3D_PATTERNS } from '../lib/patterns'
 import { hslToRgb } from '../lib/color'
 import { TOPOLOGIES } from '../lib/topology'
+import { WORLDS, isParticleKind } from '../lib/particle/world'
+import { PRESETS, presetMatrix } from '../lib/particle/presets'
 import PatternPreview from './PatternPreview'
 import Preview3D from './Preview3D'
+import MatrixPreview from './MatrixPreview'
 
 // Build a uniform { name, cells, moves, meta } list for the current mode.
 function itemsFor(kind) {
@@ -44,7 +47,65 @@ function itemsFor(kind) {
   }))
 }
 
-export default function CatalogModal({ kind, onClose }) {
+// The particle modes share the modal but not the content: a universe is
+// described by its matrix, so the preview is a heat map and the card carries a
+// button that loads the whole parameter set.
+function PresetCatalog({ label, onLoadPreset, onClose }) {
+  return (
+    <div className="modal-backdrop" onClick={onClose}>
+      <div
+        className="modal"
+        role="dialog"
+        aria-modal="true"
+        aria-label="Universenkatalog"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <button className="modal-close" onClick={onClose} aria-label="Schließen">
+          ✕
+        </button>
+
+        <h2>
+          Universenkatalog · <span className="accent">{label}</span>
+        </h2>
+        <p>
+          Vorbereitete Beziehungsmatrizen samt Parametern. Die Vorschau zeigt die Matrix: eine Zeile
+          ist ein Typ, eine Spalte das, worauf er reagiert — rot zieht an, blau stößt ab. Ein Klick
+          auf „Laden“ übernimmt das Universum, danach kannst du es über 🎛 Matrix weiter verändern.
+        </p>
+
+        <div className="catalog-grid preset-grid">
+          {PRESETS.map((preset) => (
+            <div key={preset.id} className="catalog-item preset-item">
+              <div className="catalog-preview">
+                <MatrixPreview
+                  matrix={presetMatrix(preset)}
+                  types={preset.params.types}
+                  size={104}
+                />
+              </div>
+              <div className="catalog-name">{preset.name}</div>
+              <div className="catalog-meta">
+                {preset.meta} · {preset.params.types} Typen
+              </div>
+              <p className="preset-desc">{preset.description}</p>
+              <button className="btn" onClick={() => onLoadPreset(preset.id)}>
+                Laden
+              </button>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+export default function CatalogModal({ kind, onClose, onLoadPreset }) {
+  if (isParticleKind(kind)) {
+    return (
+      <PresetCatalog label={WORLDS[kind].label} onLoadPreset={onLoadPreset} onClose={onClose} />
+    )
+  }
+
   const items = itemsFor(kind)
   const label = TOPOLOGIES[kind].label
 

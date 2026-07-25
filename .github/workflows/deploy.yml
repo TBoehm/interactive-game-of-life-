@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - claude/game-of-life-interactive-mm9dpi
+      - claude/particle-life-research-ldmjdw
       - main
   workflow_dispatch:
 

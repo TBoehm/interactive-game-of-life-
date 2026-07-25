@@ -4,7 +4,8 @@ Planungsdokument für eine Particle-Life-Umgebung **analog zu den bestehenden
 Game-of-Life-Umgebungen** dieses Repos. Fachliche Grundlage:
 [`particle-life-recherche.md`](./particle-life-recherche.md).
 
-Stand: Juli 2026 · Status: Entwurf, noch nicht umgesetzt.
+Stand: Juli 2026 · Status: **umgesetzt** (M0–M5), siehe
+[Umsetzungsstand](#11-umsetzungsstand) am Ende.
 
 ---
 
@@ -445,3 +446,39 @@ Bewusst außerhalb dieses Plans, damit der Umfang klar bleibt: WebGPU oder
 GPU-Compute, Web Worker / `SharedArrayBuffer`, Evolution oder genetische Suche
 über Matrizen, serverseitiges Speichern von Universen, Kollisionsphysik mit
 echten Radien, sowie eine Portierung der GoL-Modi auf die Partikel-Engine.
+
+---
+
+## 11. Umsetzungsstand
+
+M0–M5 sind umgesetzt und laufen; M6 (Strukturerkennung) steht weiterhin aus.
+Der Plan hat weitgehend gehalten — die Schichtung, die Prop-Verträge, die
+Testfälle und die Meilensteinfolge sind so eingebaut worden. Fünf Dinge kamen
+anders, alle erst beim Ansehen der laufenden Simulation:
+
+1. **Die Reichweite war der entscheidende Parameter, nicht die Partikelzahl.**
+   Der Plan setzte `rmax` ≈ 1 % der Weltbreite an (aus Tom Mohrs Defaults). Das
+   ergibt im Browser ein feines Konfetti aus winzigen Klümpchen. Erst eine
+   Ziel-Nachbarzahl von **18–20** statt 8 erzeugt Strukturen, die mehrere
+   Partikeldurchmesser groß sind — also das, was man als Particle Life
+   wiedererkennt. Gefunden durch systematisches Durchprobieren im echten
+   Browser, nicht durch Nachdenken.
+2. **Die handgebaute „Zellen"-Matrix fror ein.** Eine pauschale Abstoßung von
+   −0,15 zwischen allen Paaren verteilt die Zellen auf ein Gitter, auf dem sich
+   nie zwei begegnen: hübsche Tapete, tote Welt. Ohne diese Grundabstoßung, mit
+   einer schwachen asymmetrischen Kopplung zwischen den Paaren, entstehen echte
+   Kern-Hülle-Zellen, die driften und kollidieren.
+3. **„Blasen" wurde zu etwas anderem, als geplant war.** Nicht mischbare Tropfen
+   ergaben dasselbe Tapetenproblem. Mit dem konstanten Kraftgesetz und drei
+   Typen entstehen stattdessen **hohle Ringe** — optisch schön, aber eben nicht,
+   was in der Beschreibung stand. Beschreibung wurde an die Realität angepasst,
+   nicht umgekehrt.
+4. **Die 3D-Welt ist ein Würfel**, nicht der Quader aus dem Plan: Eine
+   umlaufende Kamera hat keinen Grund, auf eine Kiste zu schauen, die dreimal so
+   breit wie tief ist.
+5. **`clear()` musste die Kapazität von der aktiven Partikelzahl trennen.** Nur
+   so fühlt sich „Leeren und wieder anklicken" genauso an wie beim Game of Life.
+
+Nicht eingebaut, obwohl im Plan erwähnt: die automatische Verwerfen-und-neu-
+Würfeln-Heuristik für langweilige Zufallsmatrizen (§ 9.1). Der Katalog als
+Startpunkt reicht in der Praxis.

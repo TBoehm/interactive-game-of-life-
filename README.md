@@ -5,6 +5,10 @@ ein zufällig ausgewähltes _lebendes_ Gebilde (Oszillator, Raumschiff, Methusel
 oder eine Glider Gun) in einer **zufälligen Farbe, die sich vererbt und beim
 Wachsen mischt**, erscheinen.
 
+Dazu kommt eine zweite Welt-Familie: **Particle Life** — kein Gitter, sondern
+Partikel, die sich nach einer frei editierbaren Beziehungsmatrix anziehen und
+abstoßen.
+
 Gebaut mit **React + Vite** und Canvas-Rendering. Gehostet über **GitHub Pages**.
 
 ➡️ Live: <https://tboehm.github.io/interactive-game-of-life-/>
@@ -118,6 +122,44 @@ Systems 15 (2005)](https://wpmedia.wolfram.com/sites/13/2018/02/15-3-4.pdf) ·
 - **ℹ Über** – Kurzerklärung im Overlay.
 - **Tempo** – Generationen pro Sekunde (1–60).
 
+Im Particle-Life-Modus ändern einige Bedienelemente ihre Bedeutung:
+
+- **Klick** stupst die Partikel an (radialer Impuls), **Umschalt+Klick** setzt
+  einen Tropfen neuer Partikel. Nach **🗑 Leeren** baust du die Welt Klick für
+  Klick wieder auf.
+- **✨ Zufall** verteilt die Partikel neu (Matrix bleibt), **🎲 Matrix** würfelt
+  neue Beziehungen (Partikel bleiben).
+- **💫 Spuren** zeichnet Bewegungsspuren statt die Fläche zu löschen.
+- **🎛 Matrix** öffnet den Editor: Ziehen ändert einen Wert bei laufender
+  Simulation, Doppelklick nullt ihn.
+- **Tempo** bedeutet hier Simulationsschritte pro Bild.
+- Die zweite Werkzeugleiste steuert Gesetz, Matrixart, Typenzahl, Partikelzahl,
+  Reichweite, Reibung, β, Kraft und Torus.
+
+## Particle Life
+
+Jede Farbe ist eine Klasse; eine Matrix `A[i][j]` legt fest, wie stark Klasse
+_i_ auf Klasse _j_ reagiert (positiv = Anziehung, negativ = Abstoßung).
+Zusätzlich stoßen sich alle Partikel unterhalb des Abstands β ab —
+**matrixunabhängig**, weshalb auch eine völlig zufällige Matrix nie explodiert.
+
+Der Clou ist, dass `A` **nicht symmetrisch** sein muss: Rot jagt Blau, während
+Blau vor Rot flieht. Damit ist _actio = reactio_ verletzt, das System findet nie
+ein Gleichgewicht, und es entstehen Zellen mit Membran, Würmer und Jagdketten.
+In der Physik heißen solche Systeme _nichtreziprok_ (Fruchart u. a., Nature
+2021). Zum Gegenbeweis lädt man das Preset **Kristall**: symmetrische Matrix,
+Impulserhaltung — die Materie erstarrt.
+
+Drei Kraftgesetze stehen zur Wahl (`src/lib/particle/law.js`): **β-Zelt** (weich,
+Standard), **Konstant** (kantig) und **1/d** (zäh). Die Reichweite wird nicht
+direkt gesetzt, sondern aus einer Ziel-**Nachbarzahl** abgeleitet — dadurch
+bleibt die Bildrate stabil, wenn man die Partikelzahl hochzieht.
+
+Jedes Universum steckt vollständig im URL-Hash. Link kopieren heißt Welt teilen.
+
+Fachliche Grundlage und Quellen: [`docs/particle-life-recherche.md`](docs/particle-life-recherche.md),
+Architekturplan: [`docs/particle-life-plan.md`](docs/particle-life-plan.md).
+
 ## Katalog
 
 Der **Katalog** passt sich dem aktuellen Modus an (Quadrat, Hexagon, Dreieck,
@@ -126,6 +168,11 @@ Oszillatoren pulsieren, Raumschiffe fliegen, jedes Muster in eigener Farbe. Für
 den Quadratmodus liefert `src/lib/catalog.js` die benannten Conway-Muster; die
 zugehörigen Perioden werden über `src/lib/identify.js` aus denselben Koordinaten
 abgeleitet, sind also immer konsistent.
+
+In den Particle-Life-Modi zeigt derselbe Katalog stattdessen **vorbereitete
+Universen** (`src/lib/particle/presets.js`): Zellen, Jagdkette, Würmer, Ringe,
+Blasen, Kristall, Ökosystem, Sturm und Ruhe. Die Vorschau ist eine Heatmap der
+Matrix, ein Klick auf „Laden" übernimmt Matrix und Parameter.
 
 ## Lokal entwickeln
 
@@ -138,9 +185,17 @@ npm run preview  # gebauten Build lokal ansehen
 
 ## Tests
 
-Die Simulationslogik (Engine + Topologie) ist mit **Vitest** abgedeckt — u. a.
-Conway-Regeln (Blinker, Block, Glider), Farbvererbung/-mischung,
+Die Simulationslogik (Engine + Topologie + Partikelphysik) ist mit **Vitest**
+abgedeckt — u. a. Conway-Regeln (Blinker, Block, Glider), Farbvererbung/-mischung,
 Nachbarschafts-Symmetrie aller drei Geometrien sowie Hit-Testing.
+
+Für Particle Life prüfen die Tests unter anderem die Invarianten, an denen ein
+Vorzeichen- oder Normierungsfehler sofort auffällt: das Gitter liefert exakt
+dieselben Nachbarn wie eine O(n²)-Brute-Force-Suche, ein Schritt reproduziert
+eine unabhängige Referenzimplementierung, eine **symmetrische Matrix erhält den
+Gesamtimpuls** (eine asymmetrische nicht — das ist das Feature), die Reibung ist
+schrittweitenunabhängig, und jedes Preset läuft 400 Schritte, ohne einzufrieren
+oder zu explodieren.
 
 ```bash
 npm test         # einmalig
@@ -180,9 +235,22 @@ src/
     engine.js      # Simulation: Schritt-Logik + Farbvererbung (typed arrays)
     patterns.js    # Bibliothek der lebenden Muster
     color.js       # HSL→RGB, zufällige Farbe
+    particle/      # Particle Life (analog aufgebaut)
+      world.js     #   Weltgeometrie + Parameter   (~ topology.js)
+      law.js       #   Kraftgesetze                (~ DEFAULT_RULES)
+      grid.js      #   Nachbarschaftsgitter        (~ neighbors[])
+      physics.js   #   Simulation                  (~ engine.js)
+      matrix.js    #   Beziehungsmatrix + Generatoren
+      presets.js   #   Vorbereitete Universen      (~ patterns.js)
+      palette.js   #   Typfarben
+      rng.js       #   Seedbarer Zufall
+      url.js       #   Universum im URL-Hash
   components/
-    GameCanvas.jsx # Canvas-Rendering, Render-Loop, Klick-Interaktion
-    AboutModal.jsx # „Über"-Overlay mit Erklärung
+    GameCanvas.jsx     # Canvas-Rendering, Render-Loop, Klick-Interaktion
+    ParticleCanvas.jsx # 2D-Renderer für Particle Life
+    Particle3DCanvas.jsx # 3D-Renderer (three.js Points)
+    MatrixEditor.jsx   # Live-Editor für die Beziehungsmatrix
+    AboutModal.jsx     # „Über"-Overlay mit Erklärung
   App.jsx          # Steuerung & Layout
 ```
 
